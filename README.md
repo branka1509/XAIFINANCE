@@ -10,7 +10,9 @@ Machine Learning (ML) allows creditors to reduce lending risk by evaluating an a
 Specifically, we propose building a visual analytics (VA) tool, specifically tailored to the context of credit risk evaluation, useable for both model developers (i.e. Swiss financial intermediaries operating in the commercial or consumer credit space) as well as model evaluators (Swiss regulatory bodies that have to validate the models). More importantly, such a visual tool will enable model evaluators, a non-technical audience, to gain some insight into how AI models applied to credit scoring work and identify the reasons behind the decisions taken.
 
 In this context the repository contains all the scripts used for:
-* data preprocessing; 
+* data preprocessing
+* feature selection (2 scripts)
+* data exploration and visualization 
 * models' training and evaluation
 * running various explainability approaches on the trained models
 * sensitivity analysis 
@@ -23,11 +25,9 @@ In this context the repository contains all the scripts used for:
 *   beta_data, after inital feature selection step 
 *   alpha_data, after secondary (boruta) feature selection
 *   final dataset, used for the analysis conducted 
-* models: contains all the calculated models
-* notebooks: All RMarkdown notebooks
-* references: Reference materials like data dictionaries etc.
-* reports: visualizations, figures, etc.
-* scripts: code snippets used for processing and calculations
+* models: contains all the developed models
+* notebooks: All RMarkdown notebooks created in the project
+* functions
 
 
 ## Finacial Time Series Forecasting 
@@ -46,7 +46,7 @@ In this context, we propose a XAI approach for neural nets based on a family of 
 ### Folder structure for the financial time series forecasting use case 
 * data: containing the time series data use in the project
 * functions: script containing all generated functions 
-* scripts: full scripts containing step by step processes of training various DL models and runnding the x-function proposed within this project
+* scripts: full scripts containing the step-by-step process of training various DL models and runnding the X-function proposed within this project
 
 ## Ressources
 
