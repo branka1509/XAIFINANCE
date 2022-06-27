@@ -1,0 +1,157 @@
+---
+title: "Feature Selection"
+author: "41084.1_XAI_for_Finance"
+output: html_document
+---
+
+
+This notebook contains the project's outputs with respect to WP4, specifically looking at feature selection. The script provides a sensible approach for selecting the features to be included in a credit risk use case looking exclusively at personal lending.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+libraries = c("readr", "corrplot", "RColorBrewer", "tidyverse", "kernlab", "knitr", "tidytable", "MLmetrics", "stargazer", "dplyr", "purrr", "xtable", "base", "arulesViz", "gbm", "ggplot2", "DescTools","stylo", "igraph", "xgboost", "DALEX", "DALEXtra", "stats", "ranger", "ALEPlot", "party", "lime", "MASS", "iml", "ROCR", "rpart", "e1071", "shapper", "caret","MLmetrics", "Matrix", "Boruta", "Metrics", "fastshap", "shapper", "fscaret", "kknn", "knitr", "reshape", "reshape2", "shapper", "randomForest", "Hmisc", "networkD3", "emstreeR", "pdp", "pROC", "randomForestExplainer", "logistf")
+
+lapply(libraries, function(x) if (!(x %in% installed.packages())) {
+  install.packages(x)
+})
+
+lapply(libraries, library, quietly = TRUE, character.only = TRUE)
+
+rm(list=ls())
+options(warn = -1)
+set.seed(7)
+```
+
+We are analyzing the the processed data set for further feature selection. The main objectives: 
+* dealing with missing values
+* further feature selection: categorical features
+* further feature selection: numeric features 
+* Boruta feature selection algo
+
+```{r}
+# Import clean_df (post processing -- for further details see data_pre_processing.R)
+load("D:/XAI/Work in progress/WP3 - Data/data_lending club/raw and pre-processed/loan_data.Rda")
+```
+
+
+# Missing features: preliminary 
+The pre-processed data set resulted in 112 variable titled "is_missing+the var name" which are encoded = 1 if the value for the variable is missing for the specific loan contract and 0 otherwise. The intention of this was to check whether there exist a statistical association between our target feature (i.e. loan status) and the level "missing". For this purpose, we run a chi square test. 
+
+Resources: 
+- http://www.sthda.com/english/wiki/chi-square-test-of-independence-in-r
+- https://data-flair.training/blogs/chi-square-test-in-r/
+
+Chi square for the association between the is_missing and the target = loan_status. The null hypothesis of the Chi-Square test is that there is no relationship whereas the alternative hypothesis assumes that there is an association between the two variables.
+
+Results: For all 112 variables the p-value was > 0.05.
+
+```{r, warning=FALSE}
+df = clean_df
+missing = dplyr::select(df, starts_with("is_missing")) 
+for(i in 1:length(missing)) {
+  print(chisq.test(missing[i], df$Status))
+}
+```
+In the next step, we cancel the 112 variable. This reduces the number of features from 263 to 151.
+```{r}
+df = df[ , -which(names(df) %in% names(missing))]
+colnames(df)
+```
+
+# Missing values: column-wise and row-wise deletion. 
+
+Having obtained some evidence that missing values are not associated with our target, in the next step we deal with the features that contain the missing values. Specifically, we cancel all features that have more then 50 percent of the observations missing. 
+
+```{r}
+# Check how many NAs we have per column
+df %>%
+  summarise_all(funs(sum(is.na(.))))
+# Cancel features with more then 50 percent missing values
+missing = df[, which(colMeans(is.na(df)) > 0.5)]
+df = df[ , -which(names(df) %in% names(missing))]
+df = df[complete.cases(df),]
+```
+
+We also notice that some features have no variability. Example: policy code; all observations are equal to zero. We proceed with canceling this feature. 
+
+```{r}
+summary(df)
+```
+
+```{r}
+table(df$policy_code)
+df[52] = NULL
+```
+
+# Correlated features 
+```{r}
+df_categorical <- df[,colnames(df)[grepl('factor|logical|character', sapply(df, class))]]
+df_numeric = select_if(df, is.numeric)
+colnames(df_numeric)
+colnames(df_categorical)
+
+cor_num <- cor(df_numeric)
+corrplot(cor_num, type="upper", order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu")) # plot unreadable
+
+```
+
+```{r}
+#drop duplicates and correlations of 1     
+cor_num[lower.tri(cor_num, diag=TRUE)] <- NA 
+#drop perfect correlations
+cor_num[cor_num  == 1] <- NA 
+#turn into a 3-column table
+cor_num  <- as.data.frame(as.table(cor_num))
+#remove the NA values from above 
+cor_num  <- na.omit(cor_num) 
+#select significant values  
+sig = 0.5
+cor_num  <- subset(cor_num, abs(Freq) > sig) 
+#sort by highest correlation
+cor_num  <- cor_num [order(-abs(cor_num $Freq)),] 
+#print table
+print(cor_num )
+#turn corr back into matrix in order to plot with corrplot
+mtx_cor_num  <- reshape2::acast(cor_num , Var1~Var2, value.var="Freq")
+melt <- melt(mtx_cor_num)
+melt <- melt[complete.cases(melt),]
+#plot correlations visually
+corrplot(mtx_cor_num, type="upper", is.corr=FALSE, tl.col="black", na.label=" ")
+```
+
+In the next step, we investigate further highly correlated features and we subjective decide on which constitutes the principle variable to be kept in the specification.
+```{r}
+melt[order(melt$value, decreasing = T),]
+```
+
+```{r}
+# Keep only the principle variable from the list of highly correlated features (>0.9)
+inv_vars = dplyr::select(df, ends_with("_inv"))
+fico = dplyr::select(df, starts_with("fico_range"))
+df = df[, -which(names(df) %in% names(inv_vars))]
+grep("fico_range_high", colnames(df))
+df[27] <- NULL # cancel fico_range_high
+grep("funded_amnt", colnames(df))
+df[3] <- NULL
+grep("num_rev_tl_bal_gt_0", colnames(df))
+df[87] <- NULL
+grep("tot_hi_cred_lim", colnames(df))
+df[96] <- NULL
+grep("installment", colnames(df))
+df[5] <- NULL
+grep("total_il_high_credit_limit", colnames(df))
+df[97] <- NULL
+grep("total_rec_prncp", colnames(df))
+df[34] <- NULL
+grep("total_bal_ex_mort", colnames(df))
+df[94] <- NULL
+```
+
+Final data set contains 238,478 observations across 109 variables.
+```{r}
+saveRDS(df, file = "clean_df_after_preliminary_fs.rds")
+```
+

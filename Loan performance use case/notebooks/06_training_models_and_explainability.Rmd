@@ -1,0 +1,702 @@
+---
+title: "Training Models & Explainability"
+author: "41084.1_XAI_for_Finance"
+output: html_document
+---
+
+
+This notebook contains the project's outputs with respect to WP4, specifically looking at training different ML models and running classic XAI methods post-hoc.
+
+
+Key resources used: 
+** Documentation for the h2o ai package in R --> https://docs.h2o.ai/h2o/latest-stable/h2o-docs/automl.html 
+
+In the first step, we call all necessary libraries. 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+libraries = c("readr", "corrplot", "data.table", "RColorBrewer", "tidyverse", "kernlab", "e1071", "MLmetrics", "stargazer", "dplyr", "purrr", "xtable", "base", "ggplot2", "DescTools","stylo", "igraph", "xgboost", "DALEX", "DALEXtra", "stats", "ranger", "ALEPlot", "party", "lime", "MASS", "iml", "ROCR", "rpart", "e1071", "caret","MLmetrics", "Matrix", "Boruta", "Metrics", "fastshap", "fscaret", "kknn", "knitr", "reshape", "ggridges", "shapper", "scales", "randomForest", "pastecs", "writexl", "corrr", "PerformanceAnalytics", "Hmisc", "networkD3", "emstreeR", "pdp", "pROC", "ggcorrplot", "corrplot", "randomForestExplainer", "logistf", "h2o", "h2o4gpu")
+
+lapply(libraries, function(x) if (!(x %in% installed.packages())) {
+  install.packages(x)
+})
+
+lapply(libraries, library, quietly = TRUE, character.only = TRUE)
+
+set.seed(7)
+```
+
+
+Final data to be used for the app: df_post_data_explor.rds. For more details, check 2022_repo/01,02,03 and 04 notebooks. 
+```{r}
+#df <- readRDS("~/GitHub/xai/2022_repo/Loan Performance Use Case/data/df_post_data_explor.rds")
+df <- readRDS("~/GitHub/IWA_xai/2022_repo/Loan Performance Use Case/data/df_post_data_explor.rds")
+df = df[,-9]
+```
+
+
+Checking for NAs
+```{r}
+# Check for NAs
+apply(df, 2, function(x) any(is.na(x)))
+```
+
+Setting the response variable (recoding and setting as factor)
+```{r}
+df <- df %>% 
+    mutate(loan_status = recode(loan_status, 
+                      "0" = 0, 
+                      "1" = 1))
+df$loan_status = as.factor(df$loan_status)
+```
+
+Initate h2o environment. In case the library has been downloaded before, un-comment line 53-59 and run
+```{r}
+#if ("package:h2o" %in% search()) { detach("package:h2o", unload=TRUE) }
+#if ("h2o" %in% rownames(installed.packages())) { remove.packages("h2o") }
+#pkgs <- c("RCurl","jsonlite")
+#for (pkg in pkgs) {
+#  if (! (pkg %in% rownames(installed.packages()))) { install.packages(pkg) }
+#}
+#install.packages("h2o", type="source", repos=(c("http://h2o-release.s3.amazonaws.com/h2o/latest_stable_R")))
+
+
+# Activate h2o package for using: 
+h2o.init(nthreads = -1, max_mem_size = "16g")
+```
+
+
+Dividing the dataset on training and testing subsets. We furthermore define a test and train h2o environments.
+```{r}
+df_train <- df %>% 
+  group_by(loan_status) %>% 
+  sample_frac(0.7) %>% 
+  ungroup() # Use 70% data set for training model. 
+ 
+df_test <- dplyr::setdiff(df, df_train) # Use 30% data set for validation. 
+
+test <- as.h2o(df_test)
+train <- as.h2o(df_train)
+y = "loan_status"
+x <- setdiff(names(train), y)
+```
+
+## Training of Models 
+
+The current version of AutoML trains and cross-validates the following algorithms: 
+* three pre-specified XGBoost GBM (Gradient Boosting Machine) models,
+* a fixed grid of GLMs, 
+* a default Random Forest (DRF), 
+* five pre-specified H2O GBMs, 
+* a near-default Deep Neural Net, 
+* an Extremely Randomized Forest (XRT), 
+* a random grid of XGBoost GBMs, 
+* a random grid of H2O GBMs, and 
+* a random grid of Deep Neural Nets. 
+
+In some cases, there will not be enough time to complete all the algorithms, so some may be missing from the leaderboard. In other cases, the grids will stop early, and if there’s time left, the top two random grids will be restarted to train more models. AutoML trains multiple Stacked Ensemble models throughout the process (more info about the ensembles below).
+
+In our specific case, XGBoost is not available.
+
+```{r}
+aml <- h2o.automl(x = x, y = y,
+                  training_frame = train,
+                  max_models = 20,
+                  project_name = "loan",
+                  seed = 7) # Let's also try with 40-50 models
+```
+
+In the following step, we print all trained models using 
+```{r}
+lb <- aml@leaderboard
+#lb_table <- as.data.table(lb)
+#write_xlsx(lb_table, "lb_20models.xlsx")
+print(lb, n = nrow(lb)) 
+```
+
+
+Saving models. We would specifically enable users of the app to check:
+- the best preforming models across the different classifiers per a specific performance metric;
+- the best performing model within a specific class of models (eg. DL, GBM, GLM, etc.) per a specific performance metric (eg. auc, logloss etc.)
+
+```{r}
+best_auc <- h2o.get_best_model(aml, criterion = "auc")
+best_logloss <- h2o.get_best_model(aml, criterion = "logloss")
+best_aucpr <- h2o.get_best_model(aml, criterion = "aucpr")
+best_mean_per_class_error <- h2o.get_best_model(aml, criterion = "mean_per_class_error")
+
+SE_auc <- h2o.get_best_model(aml, algorithm = "StackedEnsemble", criterion = "auc")
+SE_logloss <- h2o.get_best_model(aml, algorithm = "StackedEnsemble", criterion = "logloss")
+SE_aucpr <- h2o.get_best_model(aml, algorithm = "StackedEnsemble", criterion = "aucpr")
+SE_mean_per_class_error <- h2o.get_best_model(aml, algorithm = "StackedEnsemble", criterion = "mean_per_class_error")
+
+GBM_auc <- h2o.get_best_model(aml, algorithm = "GBM", criterion = "auc")
+GBM_logloss <- h2o.get_best_model(aml, algorithm = "GBM", criterion = "logloss")
+GBM_aucpr <- h2o.get_best_model(aml, algorithm = "GBM", criterion = "aucpr")
+GBM_mean_per_class_error <- h2o.get_best_model(aml, algorithm = "GBM", criterion = "mean_per_class_error")
+
+GLM_auc <- h2o.get_best_model(aml, algorithm = "GLM", criterion = "auc")
+GLM_logloss <- h2o.get_best_model(aml, algorithm = "GLM", criterion = "logloss")
+GLM_aucpr <- h2o.get_best_model(aml, algorithm = "GLM", criterion = "aucpr")
+GLM_mean_per_class_error <- h2o.get_best_model(aml, algorithm = "GLM", criterion = "mean_per_class_error")
+
+DRF_auc <- h2o.get_best_model(aml, algorithm = "DRF", criterion = "auc")
+DRF_logloss <- h2o.get_best_model(aml, algorithm = "DRF", criterion = "logloss")
+DRF_aucpr <- h2o.get_best_model(aml, algorithm = "DRF", criterion = "aucpr")
+DRF_mean_per_class_error <- h2o.get_best_model(aml, algorithm = "DRF", criterion = "mean_per_class_error")
+
+
+DL_auc <- h2o.get_best_model(aml, algorithm = "DeepLearning", criterion = "auc")
+DL_logloss <- h2o.get_best_model(aml, algorithm = "DeepLearning", criterion = "logloss")
+DL_aucpr <- h2o.get_best_model(aml, algorithm = "DeepLearning", criterion = "aucpr")
+DL_mean_per_class_error <- h2o.get_best_model(aml, algorithm = "DeepLearning", criterion = "mean_per_class_error")
+
+# Once we have it
+XGB_auc <- h2o.get_best_model(aml, algorithm = "XGBoost", criterion = "auc")
+XGB_logloss <- h2o.get_best_model(aml, algorithm = "XGBoost", criterion = "logloss")
+XGB_aucpr <- h2o.get_best_model(aml, algorithm = "XGBoost", criterion = "aucpr")
+XGB_mean_per_class_error <- h2o.get_best_model(aml, algorithm = "XGBoost", criterion = "mean_per_class_error")
+
+```
+
+
+
+```{r}
+# Meta information 
+# Get AutoML event log
+eventLog <- aml@event_log
+eventLog
+```
+
+```{r}
+# Get training timing info
+trainingInfo <- aml@training_info
+trainingInfo
+```
+
+
+# Predictions
+In the following step, we make the predictions on the test set.
+
+```{r}
+pred_best_auc <- h2o.predict(best_auc, test)
+pred_best_logloss <- h2o.predict(best_logloss, test)
+pred_best_aucpr <- h2o.predict(best_aucpr, test)
+pred_best_mean_per_class_error <- h2o.predict(best_mean_per_class_error, test)
+
+
+pred_SE_auc <- h2o.predict(SE_auc, test)
+pred_SE_logloss <- h2o.predict(SE_logloss, test)
+pred_SE_aucpr <- h2o.predict(SE_aucpr, test)
+pred_SE_mean_per_class_error <- h2o.predict(SE_mean_per_class_error, test)
+
+
+pred_GBM_auc <- h2o.predict(GBM_auc, test)
+pred_GBM_logloss <- h2o.predict(GBM_logloss, test)
+pred_GBM_aucpr <- h2o.predict(GBM_aucpr, test)
+pred_GBM_mean_per_class_error <- h2o.predict(GBM_mean_per_class_error, test)
+
+
+pred_DRF_auc <- h2o.predict(DRF_auc, test)
+pred_DRF_logloss <- h2o.predict(DRF_logloss, test)
+pred_DRF_aucpr <- h2o.predict(DRF_aucpr, test)
+pred_DRF_mean_per_class_error <- h2o.predict(DRF_mean_per_class_error, test)
+
+pred_DL_auc <- h2o.predict(DL_auc, test)
+pred_DL_logloss <- h2o.predict(DL_logloss, test)
+pred_DL_aucpr <- h2o.predict(DL_aucpr, test)
+pred_DL_mean_per_class_error <- h2o.predict(DL_mean_per_class_error, test)
+
+
+pred_GLM_auc <- h2o.predict(GLM_auc, test)
+pred_GLM_logloss <- h2o.predict(GLM_logloss, test)
+pred_GLM_aucpr <- h2o.predict(GLM_aucpr, test)
+pred_GLM_mean_per_class_error <- h2o.predict(GLM_mean_per_class_error, test)
+
+
+pred_XGB_auc <- h2o.predict(XGB_auc, test)
+pred_XGB_logloss <- h2o.predict(XGB_logloss, test)
+pred_XGB_aucpr <- h2o.predict(XGB_aucpr, test)
+pred_XGB_mean_per_class_error <- h2o.predict(XGB_mean_per_class_error, test)
+```
+
+
+Model performance (all different metrics for evaluation):
+* Gini
+* Absolute MCC
+* F1
+* F0.5
+* F2
+* Accuracy
+* Logloss
+* AUC
+* AUCPR
+* KS Metric
+
+# Performance objects 
+In the following step we check the perfromance on all different models 
+
+```{r}
+# The performance objects for each model 
+perf_best_auc <- h2o.performance(best_auc, test)
+perf_best_logloss <- h2o.performance(best_logloss, test)
+perf_best_aucpr <- h2o.performance(best_aucpr, test)
+perf_best_mean_per_class_error <- h2o.performance(best_mean_per_class_error, test)
+
+
+perf_SE_auc <- h2o.performance(SE_auc, test)
+perf_SE_logloss <- h2o.performance(SE_logloss, test)
+perf_SE_aucpr <- h2o.performance(SE_aucpr, test)
+perf_SE_mean_per_class_error <- h2o.performance(SE_mean_per_class_error, test)
+
+
+perf_GBM_auc <- h2o.performance(GBM_auc, test)
+perf_GBM_logloss <- h2o.performance(GBM_logloss, test)
+perf_GBM_aucpr <- h2o.performance(GBM_aucpr, test)
+perf_GBM_mean_per_class_error <- h2o.performance(GBM_mean_per_class_error, test)
+
+
+perf_DRF_auc <- h2o.performance(DRF_auc, test)
+perf_DRF_logloss <- h2o.performance(DRF_logloss, test)
+perf_DRF_aucpr <- h2o.performance(DRF_aucpr, test)
+perf_DRF_mean_per_class_error <- h2o.performance(DRF_mean_per_class_error, test)
+
+perf_DL_auc <- h2o.performance(DL_auc, test)
+perf_DL_logloss <- h2o.performance(DL_logloss, test)
+perf_DL_aucpr <- h2o.performance(DL_aucpr, test)
+perf_DL_mean_per_class_error <- h2o.performance(DL_mean_per_class_error, test)
+
+
+perf_GLM_auc <- h2o.performance(GLM_auc, test)
+perf_GLM_logloss <- h2o.performance(GLM_logloss, test)
+perf_GLM_aucpr <- h2o.performance(GLM_aucpr, test)
+perf_GLM_mean_per_class_error <- h2o.performance(GLM_mean_per_class_error, test)
+
+
+perf_XGB_auc <- h2o.performance(XGB_auc, test)
+perf_XGB_logloss <- h2o.performance(XGB_logloss, test)
+perf_XGB_aucpr <- h2o.performance(XGB_aucpr, test)
+perf_XGB_mean_per_class_error <- h2o.performance(XGB_mean_per_class_error, test)
+```
+
+
+# Summary performance 
+The threshold values that lead to largest value of the different performance metrics. 
+
+```{r}
+# source function "performance_joint"
+#source('~/GitHub/xai/2022_repo/Loan Performance Use Case/Functions and checks/performance_joint.R')
+source('~/GitHub/IWA_xai/2022_repo/Loan Performance Use Case/Functions and checks/performance_joint.R')
+
+threshold_best_auc <- performance_joint(perf_best_auc)
+threshold_best_logloss <- performance_joint(perf_best_logloss)
+threshold_best_aucpr <- performance_joint(perf_best_aucpr)
+threshold_best_mean_per_class_error <- performance_joint(perf_best_mean_per_class_error)
+
+threshold_SE_auc <- performance_joint(perf_SE_auc)
+threshold_SE_logloss <- performance_joint(perf_SE_logloss)
+threshold_SE_aucpr <- performance_joint(perf_SE_aucpr)
+threshold_SE_mean_per_class_error <- performance_joint(perf_SE_mean_per_class_error)
+
+threshold_GBM_auc <- performance_joint(perf_GBM_auc)
+threshold_GBM_logloss <- performance_joint(perf_GBM_logloss)
+threshold_GBM_aucpr <- performance_joint(perf_GBM_aucpr)
+threshold_GBM_mean_per_class_error <- performance_joint(perf_GBM_mean_per_class_error)
+
+threshold_GLM_auc <- performance_joint(perf_GLM_auc)
+threshold_GLM_logloss <- performance_joint(perf_GLM_logloss)
+threshold_GLM_aucpr <- performance_joint(perf_GLM_aucpr)
+threshold_GLM_mean_per_class_error <- performance_joint(perf_GLM_mean_per_class_error)
+
+threshold_DRF_auc <- performance_joint(perf_DRF_auc)
+threshold_DRF_logloss <- performance_joint(perf_DRF_logloss)
+threshold_DRF_aucpr <- performance_joint(perf_DRF_aucpr)
+threshold_DRF_mean_per_class_error <- performance_joint(perf_DRF_mean_per_class_error)
+
+threshold_DL_auc <- performance_joint(perf_DL_auc)
+threshold_DL_logloss <- performance_joint(perf_DL_logloss)
+threshold_DL_aucpr <- performance_joint(perf_DL_aucpr)
+threshold_DL_mean_per_class_error <- performance_joint(perf_DL_mean_per_class_error)
+
+threshold_XGB_auc <- performance_joint(perf_XGB_auc)
+threshold_XGB_logloss <- performance_joint(perf_XGB_logloss)
+threshold_XGB_aucpr <- performance_joint(perf_XGB_aucpr)
+threshold_XGB_mean_per_class_error <- performance_joint(perf_XGB_mean_per_class_error)
+
+```
+
+
+```{r}
+# Single indicator values
+performance_single <- function(perf_object){
+  capture.output(cat("logloss", h2o.logloss(perf_object), "auc", h2o.auc(perf_object), "aucpr", h2o.aucpr(perf_object)))
+}
+```
+
+```{r}
+single_best_auc <- performance_single(perf_best_auc)
+single_best_logloss <- performance_single(perf_best_logloss)
+single_best_aucpr <- performance_single(perf_best_aucpr)
+single_best_mean_per_class_error <- performance_single(perf_best_mean_per_class_error)
+
+single_SE_auc <- performance_single(perf_SE_auc)
+single_SE_logloss <- performance_single(perf_SE_logloss)
+single_SE_aucpr <- performance_single(perf_SE_aucpr)
+single_SE_mean_per_class_error <- performance_single(perf_SE_mean_per_class_error)
+
+single_GBM_auc <- performance_single(perf_GBM_auc)
+single_GBM_logloss <- performance_single(perf_GBM_logloss)
+single_GBM_aucpr <- performance_single(perf_GBM_aucpr)
+single_GBM_mean_per_class_error <- performance_single(perf_GBM_mean_per_class_error)
+
+single_GLM_auc <- performance_single(perf_GLM_auc)
+single_GLM_logloss <- performance_single(perf_GLM_logloss)
+single_GLM_aucpr <- performance_single(perf_GLM_aucpr)
+single_GLM_mean_per_class_error <- performance_single(perf_GLM_mean_per_class_error)
+
+single_DRF_auc <- performance_single(perf_DRF_auc)
+single_DRF_logloss <- performance_single(perf_DRF_logloss)
+single_DRF_aucpr <- performance_single(perf_DRF_aucpr)
+single_DRF_mean_per_class_error <- performance_single(perf_DRF_mean_per_class_error)
+
+single_DL_auc <- performance_single(perf_DL_auc)
+single_DL_logloss <- performance_single(perf_DL_logloss)
+single_DL_aucpr <- performance_single(perf_DL_aucpr)
+single_DL_mean_per_class_error <- performance_single(perf_DL_mean_per_class_error)
+
+single_XGB_auc <- performance_single(perf_XGB_auc)
+single_XGB_logloss <- performance_single(perf_XGB_logloss)
+single_XGB_aucpr <- performance_single(perf_XGB_aucpr)
+single_XGB_mean_per_class_error <- performance_single(perf_XGB_mean_per_class_error)
+
+```
+
+
+```{r}
+# Confusion matrix, ROC and PR 
+conf_matrix_best_auc <- h2o.confusionMatrix(perf_best_auc)
+conf_matrix_best_logloss <- h2o.confusionMatrix(perf_best_logloss)
+conf_matrix_best_aucpr <- h2o.confusionMatrix(perf_best_aucpr)
+conf_matrix_best_mean_per_class_error <- h2o.confusionMatrix(perf_best_mean_per_class_error)
+
+conf_matrix_SE_auc <- h2o.confusionMatrix(perf_SE_auc)
+conf_matrix_SE_logloss <- h2o.confusionMatrix(perf_SE_logloss)
+conf_matrix_SE_aucpr <- h2o.confusionMatrix(perf_SE_aucpr)
+conf_matrix_SE_mean_per_class_error <- h2o.confusionMatrix(perf_SE_mean_per_class_error)
+
+conf_matrix_GBM_auc <- h2o.confusionMatrix(perf_GBM_auc)
+conf_matrix_GBM_logloss <- h2o.confusionMatrix(perf_GBM_logloss)
+conf_matrix_GBM_aucpr <- h2o.confusionMatrix(perf_GBM_aucpr)
+conf_matrix_GBM_mean_per_class_error <- h2o.confusionMatrix(perf_GBM_mean_per_class_error)
+
+conf_matrix_GLM_auc <- h2o.confusionMatrix(perf_GLM_auc)
+conf_matrix_GLM_logloss <- h2o.confusionMatrix(perf_GLM_logloss)
+conf_matrix_GLM_aucpr <- h2o.confusionMatrix(perf_GLM_aucpr)
+conf_matrix_GLM_mean_per_class_error <- h2o.confusionMatrix(perf_GLM_mean_per_class_error)
+
+conf_matrix_DRF_auc <- h2o.confusionMatrix(perf_DRF_auc)
+conf_matrix_DRF_logloss <- h2o.confusionMatrix(perf_DRF_logloss)
+conf_matrix_DRF_aucpr <- h2o.confusionMatrix(perf_DRF_aucpr)
+conf_matrix_DRF_mean_per_class_error <- h2o.confusionMatrix(perf_DRF_mean_per_class_error)
+
+conf_matrix_DL_auc <- h2o.confusionMatrix(perf_DL_auc)
+conf_matrix_DL_logloss <- h2o.confusionMatrix(perf_DL_logloss)
+conf_matrix_DL_aucpr <- h2o.confusionMatrix(perf_DL_aucpr)
+conf_matrix_DL_mean_per_class_error <- h2o.confusionMatrix(perf_DL_mean_per_class_error)
+
+conf_matrix_XGB_auc <- h2o.confusionMatrix(perf_XGB_auc)
+conf_matrix_XGB_logloss <- h2o.confusionMatrix(perf_XGB_logloss)
+conf_matrix_XGB_aucpr <- h2o.confusionMatrix(perf_XGB_aucpr)
+conf_matrix_XGB_mean_per_class_error <- h2o.confusionMatrix(perf_XGB_mean_per_class_error)
+
+
+#h2o.varimp_plot(best_model_by_auc) # only if for the underlining model there is a variable importance plot 
+plot(perf_best_auc, type = "roc")
+plot(perf_best_logloss, type = "roc")
+plot(perf_best_aucpr, type = "roc")
+plot(perf_best_mean_per_class_error, type = "roc")
+
+plot(perf_best_auc, type = "pr")
+plot(perf_best_logloss, type = "pr")
+plot(perf_best_aucpr, type = "pr")
+plot(perf_best_mean_per_class_error, type = "pr")
+
+plot(perf_SE_auc, type = "roc")
+plot(perf_SE_logloss, type = "roc")
+plot(perf_SE_aucpr, type = "roc")
+plot(perf_SE_mean_per_class_error, type = "roc")
+
+plot(perf_SE_auc, type = "pr")
+plot(perf_SE_logloss, type = "pr")
+plot(perf_SE_aucpr, type = "pr")
+plot(perf_SE_mean_per_class_error, type = "pr")
+
+plot(perf_GBM_auc, type = "roc")
+plot(perf_GBM_logloss, type = "roc")
+plot(perf_GBM_aucpr, type = "roc")
+plot(perf_GBM_mean_per_class_error, type = "roc")
+
+plot(perf_GBM_auc, type = "pr")
+plot(perf_GBM_logloss, type = "pr")
+plot(perf_GBM_aucpr, type = "pr")
+plot(perf_GBM_mean_per_class_error, type = "pr")
+
+plot(perf_GLM_auc, type = "roc")
+plot(perf_GLM_logloss, type = "roc")
+plot(perf_GLM_aucpr, type = "roc")
+plot(perf_GLM_mean_per_class_error, type = "roc")
+
+plot(perf_GLM_auc, type = "pr")
+plot(perf_GLM_logloss, type = "pr")
+plot(perf_GLM_aucpr, type = "pr")
+plot(perf_GLM_mean_per_class_error, type = "pr")
+
+plot(perf_DRF_auc, type = "roc")
+plot(perf_DRF_logloss, type = "roc")
+plot(perf_DRF_aucpr, type = "roc")
+plot(perf_DRF_mean_per_class_error, type = "roc")
+
+plot(perf_DRF_auc, type = "pr")
+plot(perf_DRF_logloss, type = "pr")
+plot(perf_DRF_aucpr, type = "pr")
+plot(perf_DRF_mean_per_class_error, type = "pr")
+
+plot(perf_DL_auc, type = "roc")
+plot(perf_DL_logloss, type = "roc")
+plot(perf_DL_aucpr, type = "roc")
+plot(perf_DL_mean_per_class_error, type = "roc")
+
+plot(perf_DL_auc, type = "pr")
+plot(perf_DL_logloss, type = "pr")
+plot(perf_DL_aucpr, type = "pr")
+plot(perf_DL_mean_per_class_error, type = "pr")
+
+plot(perf_XGB_auc, type = "roc")
+plot(perf_XGB_logloss, type = "roc")
+plot(perf_XGB_aucpr, type = "roc")
+plot(perf_XGB_mean_per_class_error, type = "roc")
+
+plot(perf_XGB_auc, type = "pr")
+plot(perf_XGB_logloss, type = "pr")
+plot(perf_XGB_aucpr, type = "pr")
+plot(perf_XGB_mean_per_class_error, type = "pr")
+
+```
+
+
+Additional performance indicators (unique for certain models)
+```{r, fig.height=25, fig.width=25}
+coef_plot_best_GLM_auc <- h2o.std_coef_plot(GLM_auc) # Only for GLM models 
+coef_plot_best_GLM_logloss <- h2o.std_coef_plot(GLM_logloss)
+coef_plot_best_GLM_aucpr <- h2o.std_coef_plot(GLM_aucpr)
+coef_plot_best_GLM_mean_per_class_error <- h2o.std_coef_plot(GLM_mean_per_class_error)
+```
+
+# Saving 
+```{r}
+#for(i in 1:nrow(aml@leaderboard)) {
+#  print(aml@leaderboard[i, 1])
+#  aml1 <- h2o.getModel(aml@leaderboard[i, 1]) # get model object in environment
+#  h2o.saveModel(object = aml1, "~/GitHub/xai/2022_repo/Loan Performance Use Case/models") # pass that model object to h2o.saveModel as an argument
+#  }
+```
+
+```{r}
+#save.image("~/GitHub/xai/2022_repo/Loan Performance Use Case/workspace/workspace/aml.RData")
+#saveRDS(aml, "20220411_aml.rds")
+#source('~/GitHub/IWA_xai/2022_repo/Loan Performance Use Case/Functions and checks/h2oautoml_saveload.R')
+#aml_path <- h2o.save_automl(aml, path = NULL)
+#h2o.shutdown(prompt = FALSE)
+#Sys.sleep(10)
+#rm(aml)
+```
+
+```{r}
+#library(h2o)
+#h2o.init()
+#source('~/GitHub/IWA_xai/2022_repo/Loan Performance Use Case/Functions and checks/h2oautoml_saveload.R')
+#aml_new <- h2o.load_automl(path = aml_path)
+```
+
+
+```{r}
+#h2o.saveModel(object = aml, path = NULL, force = TRUE)
+# }
+```
+
+
+# Explainability 
+# H20 framework explained (for further details check the documentation https://docs.h2o.ai/h2o/latest-stable/h2o-docs/explain.html)
+H2O Explainability Interface is a convenient wrapper to a number of explainabilty methods and visualizations in H2O. The main functions:
+* h2o.explain() (global explanation)
+* h2o.explain_row() (local explanation) 
+work for individual H2O models, as well a list of models or an H2O AutoML object. 
+
+The h2o.explain() function generates a list of explanations – individual units of explanation such as a Partial Dependence plot or a Variable Importance plot. Most of the explanations are visual – these plots can also be created by individual utility functions outside the h2o.explain() function. The visualization engine used in the R interface is the ggplot2 package
+
+
+When h2o.explain() is provided a list of models, the following global explanations will be generated by default:
+
+* Leaderboard (compare all models)
+
+* Confusion Matrix for Leader Model (classification only)
+
+* Residual Analysis for Leader Model (regression only)
+
+* Variable Importance of Top Base (non-Stacked) Model
+
+* Variable Importance Heatmap (compare all non-Stacked models)
+
+* Model Correlation Heatmap (compare all models)
+
+* SHAP Summary of Top Tree-based Model (TreeSHAP)
+
+* Partial Dependence (PD) Multi Plots (compare all models)
+
+* Individual Conditional Expectation (ICE) Plots
+
+
+
+```{r}
+exp_models <- h2o.explain(aml, test) 
+#print(exp_models)
+```
+
+
+
+# Get a specific model by model ID
+
+```{r}
+#models <- list()
+#for(i in 1:nrow(aml@leaderboard)) {
+#  models[[i]] <- h2o.getModel(aml@leaderboard[i,1])
+#}
+```
+
+
+```{r}
+#exp_models <- list()
+#for (i in 1:nrow(aml@leaderboard)) {
+#  exp_models[[i]] <- h2o.explain(models[[i]], test)
+#}
+```
+
+
+## Explainations for the best models per category 
+```{r}
+# For some reason, I cannot run the explainations for the SE models! 
+#exp_best_auc <- h2o.explain(best_auc, test)
+#exp_best_logloss <- h2o.explain(best_logloss, test)
+#exp_best_aucpr <- h2o.explain(best_aucpr, test)
+#exp_best_mean_per_class_error <- h2o.explain(best_mean_per_class_error, test)
+
+#exp_SE_auc <- h2o.explain(SE_auc, test)
+#exp_SE_logloss <- h2o.explain(SE_logloss, test)
+#exp_SE_aucpr <- h2o.explain(SE_aucpr, test)
+#exp_SE_mean_per_class_error <- h2o.explain(SE_mean_per_class_error, test)
+
+exp_GLM_auc <- h2o.explain(GLM_auc, test)
+exp_GLM_logloss <- h2o.explain(GLM_logloss, test)
+exp_GLM_aucpr <- h2o.explain(GLM_aucpr, test)
+exp_GLM_mean_per_class_error <- h2o.explain(GLM_mean_per_class_error, test)
+
+exp_GBM_auc <- h2o.explain(GBM_auc, test)
+exp_GBM_logloss <- h2o.explain(GBM_logloss, test)
+exp_GBM_aucpr <- h2o.explain(GBM_aucpr, test)
+exp_GBM_mean_per_class_error <- h2o.explain(GBM_mean_per_class_error, test)
+
+exp_DRF_auc <- h2o.explain(DRF_auc, test)
+exp_DRF_logloss <- h2o.explain(DRF_logloss, test)
+exp_DRF_aucpr <- h2o.explain(DRF_aucpr, test)
+exp_DRF_mean_per_class_error <- h2o.explain(DRF_mean_per_class_error, test)
+
+exp_DL_auc <- h2o.explain(DL_auc, test)
+exp_DL_logloss <- h2o.explain(DL_logloss, test)
+exp_DL_aucpr <- h2o.explain(DL_aucpr, test)
+exp_DL_mean_per_class_error <- h2o.explain(DL_mean_per_class_error, test)
+
+exp_XGB_auc <- h2o.explain(XGB_auc, test)
+exp_XGB_logloss <- h2o.explain(XGB_logloss, test)
+exp_XGB_aucpr <- h2o.explain(XGB_aucpr, test)
+exp_XGB_mean_per_class_error <- h2o.explain(XGB_mean_per_class_error, test)
+
+```
+
+
+## Local explanations 
+In the following step, we obtain explanations for a specific loan contract. In other words, we explain the behavior of a model or group of models with respect to a single row of data. By using the h2o.explain_row() function, the outputs would be: 
+* SHAP Contribution Plot (for the top tree-based model in AutoML)
+* Individual Conditional Expectation (ICE) Plots
+
+```{r}
+# Explain the first row predicted by the best GBM model by AUC
+rows_GBM_auc <- list()
+for (i in 1:100) {
+  rows_GBM_auc[[i]] <- h2o.explain_row(GBM_auc, test, row_index = i)
+}
+```
+
+
+```{r}
+# Explain the first row predicted by the best GLM model by AUC
+rows_GLM_auc <- list()
+for (i in 1:100) {
+  rows_GLM_auc[[i]] <- h2o.explain_row(GLM_auc, test, row_index = i)
+}
+```
+
+
+```{r}
+# Explain the first row predicted by the best model by auc
+rows_best_auc <- list()
+for (i in 1:100) {
+  rows_best_auc[[i]] <- h2o.explain_row(best_auc, test, row_index = i)
+}
+```
+
+
+```{r}
+# Explain the first row predicted by the best DRF model by auc
+rows_DRF_auc <- list()
+for (i in 1:100) {
+  rows_DRF_auc[[i]] <- h2o.explain_row(DRF_auc, test, row_index = i)
+}
+```
+
+
+```{r}
+# Explain the first row predicted by the best DL model by auc
+rows_DL_auc <- list()
+for (i in 1:100) {
+  rows_DL_auc[[i]] <- h2o.explain_row(DL_auc, test, row_index = i)
+}
+```
+
+
+```{r}
+# Explain the first row predicted by the best XGB model by mean_per_class_error
+rows_XGB_auc <- list()
+for (i in 1:100) {
+  rows_XGB_auc[[i]] <- h2o.explain_row(XGB_auc, test, row_index = i)
+}
+```
+
+
+```{r, fig.height=20, fig.width=20}
+# Explainations - all 20 models 
+vaimp_heat_plot <- h2o.varimp_heatmap(aml)
+vaimp_heat_plot
+```
+
+
+```{r}
+# Correlation_heatmap
+cor_heatmap <- h2o.model_correlation_heatmap(aml, test)
+cor_heatmap
+```
+
+```{r}
+# Plot partial dependencies for a variable across multiple models
+pdp_plot_lo <- h2o.pd_multi_plot(aml, test, column = "loan_amnt")
+pdp_plot
+```
