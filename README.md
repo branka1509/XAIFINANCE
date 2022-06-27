@@ -1,8 +1,8 @@
 # Towards explainable AI in Credit Risk Management
 
 This repository contains the code to the explainable AI project funded by Innosuisse xxx project. In this project, we aim to build a VA framework which will enable users to get some insights into the innerworkings of ML models as applied to financial problem sets. Specifically, we consider two different use cases:
-** credit riks modelling 
-** financial time series forecasting 
+*   credit riks modelling 
+*   financial time series forecasting 
 
 ## Credit Risk Use Case 
 Machine Learning (ML) allows creditors to reduce lending risk by evaluating an abundance of customer data. However, these models lack the transparency required by regulators. We propose a visual analytics tool for understanding the inner-workings of ML models as they apply to credit scoring.
