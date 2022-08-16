@@ -1,5 +1,5 @@
 # Data folder
-/App/data/*
+/App/data/environment/*
 
 # History files
 .Rhistory
