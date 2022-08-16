@@ -1,4 +1,4 @@
-# Towards explainable AI in Financial Applications 
+# Towards eXplainable AI in Financial Applications 
 
 This repository contains the code to the explainable AI project funded by Innosuisse xxx project. In this project, we aim to build a VA framework which will enable users to get some insights into the innerworkings of ML models as applied to financial problem sets. Specifically, we consider two different use cases:
 *   credit riks modelling 
