@@ -1,0 +1,34 @@
+<p>This VA tool is produced as part of the work done under the Innosuisse Project 41084.1 IP-SBM: Towards Explainable Artificial Intelligence and Machine Learning in Credit Risk Management. Under this project, we build a VA tool which will enable users to get insights into the innerworkings of ML models as applied to financial problem sets. Specifically, we consider two different use cases:</p>
+<ul>
+<li>credit risk modelling</li>
+<li>financial time series forecasting</li>
+</ul>
+<h2 id="what-do-we-do-">What do we do?</h2>
+<p>The management of risks, and especially the management of credit risk is one of the core challenges of financial institutions. By relying extensively on customer data and advanced methodologies, Swiss financial institutions can offer a new approach to credit risk evaluation, valid even in a context of very short credit history of clients, one that might not satisfy traditional lending requirements. In other words, the advances in digital technology allow Swiss financial institutions to reduce the cost of credit and increase financial inclusion. Yet, AI-based techniques applied to credit scoring have certain weaknesses, one being that they remain largely incomprehensible, a “black box”, for the nontechnical model evaluators which need to approve them.</p>
+<h2 id="credit-risk-use-case">Credit Risk Use Case</h2>
+<p>The credit risk use cases enables users to learn and see end-to-end credit risk model development involving machine learning systems. The use case further enables users to gain more insights into how machine learning models applied to loan performance data operate and arrived at a certain output. Specifically, the app allows user to:</p>
+<ul>
+<li><p>Understand the data pre-processing steps necessary to ensure sufficient data quality for the different ML models to be trained (factorization, binarization, target class balance, missing features, transformation, groping of levels, etc.)</p>
+</li>
+<li><p>View and understand the outputs of various trained ML models (DRF, GLM, XGBoost, GBM, DL, Staked ensemble models).</p>
+</li>
+<li><p>Evaluate and compare the performance of different ML models</p>
+</li>
+<li>Explain the models at a local and global level using different post-hoc Explainability techniques. Understand the main features that drive outputs under the different ML models.</li>
+<li>Run sensitivity analysis on the different trained models (steps: run specific ML models; (ii) change the input matrix and (iii) obtain a report on the various aspects of the model’s performance)</li>
+</ul>
+<h2 id="financial-time-series-use-case">Financial Time Series Use Case</h2>
+<p>Even though many of the classical XAI approaches can lead to valuable insights about the models’ inner workings, in most cases these techniques are not tailored for time series applications due to the presence of possibly complex and non-stationary dependence structure of the data.</p>
+<p>Specifically, perturbation-based methods are fully dependent on the ability to perturb samples in a meaningful way. In the context of financial data:</p>
+<ul>
+<li>if features are correlated, the artificial coalitions created will lie outside of the multivariate joint distribution of the data,</li>
+<li>if the data are independent, coalitions/generated data points can still be meaningless; </li>
+<li>generating artificial data points through random replacement disregards the time sequence hence producing unrealistic values for the feature of interest.</li>
+</ul>
+<p>In this project, we also propose a generic XAI-technique for deep learning methods (DL) which preserves and exploits the natural time ordering of the data by introducing a family of so-called explainability (X-)functions. This concept bypasses severe identifiability issues, related among others to profane numerical optimization problems, and it promotes transparency by means of intuitively appealing input-output relations, ordered by time.</p>
+<p>In this second use case, we illustrate the generic concept based on financial time series. Specifically, using the app users can:</p>
+<ul>
+<li>Understand the optimization issues associated with random nets (algorithms do not reach global optimum; Parameters are not properly identified)</li>
+<li>View the explanations provided by Classical XAI approaches as applied to financial time series. Learn about the lack of suitable XAI methods for Finance</li>
+<li>Learn about new X-functions that can provide meaning as to the outputs offered by complex nn models that are time specific.</li>
+</ul>

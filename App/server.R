@@ -1,0 +1,11 @@
+shinyServer(function(input, output, session){
+  loanDataServer("loan_data")
+  loanDataSingleServer("loan_data_single")
+  loanDataMultipleServer("loan_data_multiple")
+  loanPreServer("loan_pre")
+  loanModelsServer("loan_models")
+  loanExplainabilityServer("loan_explainability")
+  loanStabilityServer("loan_stability")
+  tsExplorationServer("ts_data")
+  # tsClassicServer("ts_calssic")
+})

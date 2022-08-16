@@ -1,0 +1,107 @@
+# initial settings
+library("caret")
+library("glmc")
+library("caTools")
+library("tidyverse")
+library("corrplot")
+library("glmnet")
+library("doParallel")
+library("pROC")
+library("shiny")
+library("shinythemes")
+library("shinyWidgets")
+library("shinydashboard")
+library("DT")
+library("readr")
+library("RColorBrewer")
+library("kernlab")
+library("e1071")
+library("MLmetrics")
+library("stargazer")
+library("dplyr")
+library("purrr")
+library("xtable")
+library("base")
+library("ggplot2")
+library("DescTools")
+library("stylo")
+library("igraph")
+library("stats")
+library("ranger")
+library("ALEPlot")
+library("party")
+library("lime")
+library("MASS")
+library("iml")
+library("ROCR")
+library("rpart")
+library("Matrix")
+library("readxl")
+library("Metrics")
+library("fastshap")
+library("fscaret")
+library("kknn")
+library("knitr")
+library("reshape")
+library("shapper")
+library("randomForest")
+library("Hmisc")
+library("networkD3")
+library("emstreeR")
+library("pdp")
+library("logistf")
+library("pastecs")
+
+# specifically loaded
+library("ggcorrplot")
+library("vtable")
+library("PerformanceAnalytics")
+library("sjPlot")
+library("jtools")
+library("ggridges")
+library("huxtable")
+library("treemapify")
+
+# time series use-case
+library("xts")
+library("h2o")
+library("shapper")
+library("neuralnet")
+library("DALEX")
+
+
+source("pages/start.R")
+source("pages/loan.R")
+source("pages/loan_pre.R")
+source("pages/loan_data.R")
+source("pages/loan_data_single.R")
+source("pages/loan_data_multiple.R")
+source("pages/loan_models.R")
+source("pages/loan_explainability.R")
+source("pages/loan_stability.R")
+source("pages/time.R")
+source("pages/x_function.R")
+source("pages/ts_modelling.R")
+source("pages/ts_usecase.R")
+source("pages/ts_exploration.R")
+source("pages/ts_classic.R")
+
+# load data
+load("~/GitHub/xai-app/app/data/clean/bitcoin.Rdata")
+# load data from environment
+env_files <- list.files("~/GitHub/xai-app/app/data/environment", pattern="*.RData", full.names=FALSE)
+existing_files <- objects()
+
+for (file in env_files){
+  file_name <- gsub(".RData","", file)
+  if (file_name %in% existing_files){
+    print(paste0("File already exists: ", file_name))
+  } else{
+    print(paste0("Loading file: ", file_name))
+    load(paste0("~/GitHub/xai-app/app/data/environment/",file))
+  }
+}
+
+
+
+

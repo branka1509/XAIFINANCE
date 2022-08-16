@@ -48,6 +48,15 @@ In this context, we propose a XAI approach for neural nets based on a family of 
 * functions: script containing all generated functions 
 * scripts: full scripts containing the step-by-step process of training various DL models and runnding the X-function proposed within this project
 
+## Explainable AI Application
+
+This app is part of an InnoSuisse project with the aim to apply explainable AI to financial use-cases.
+
+### How to run the app
+1. Clone the GitHub Repository to your local machine. 
+2. Create a folder called "environment" in the data folder and extract the environment ZIP there.
+3. Open the ui.R or server.R in you R-Studio.
+4. Click run in the top right corner of the script to execute the app.
 ## Ressources
 
 - [Interpretable Machine Learning](https://christophm.github.io/interpretable-ml-book/)

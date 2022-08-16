@@ -1,0 +1,9 @@
+<p>In this project, we developed simple x-functions that allow the user to have meaningful insights as to the outputs of complex neural network models,  that are time specific.</p>
+<p>We propose a family of Explainability (X-)functions xf(.) for assigning meaning to the net’s response or output 𝑜<em>𝑡 over time t = 1, ..., T, where 𝑜</em>𝑡 = (𝑜<em>1𝑡, ..., 𝑜</em>𝑛𝑝𝑡) is a 𝑛_𝑝 dimensional vector of possibly multiple output neurons.</p>
+<p>By selecting the identity xf(𝑜<em>𝑡 ) = 𝑜</em>𝑡 we can mark preference for the sensitivities or partial derivatives 𝑤<em>𝑖𝑗𝑡=(&quot;∂&quot; 𝑜</em>𝑗𝑡)/(&quot;∂&quot; 𝑥<em>𝑖𝑡 ), 𝑖 = 1, …, 𝑛, 𝑗 = 1, …, 𝑛</em>𝑝, for each explanatory variable 𝑥_𝑖𝑡  of the net.</p>
+<p>In order to complete the ’explanation’ derived from the identity one can add a synthetic intercept to each output neuron 𝑜_𝑗𝑡 defined according to:</p>
+<p>𝑏<em>𝑗𝑡≔𝑜</em>𝑗𝑡−∑<em>(𝑖=1)^𝑛▒〖𝑤</em>𝑖𝑗𝑡 𝑥_𝑖𝑡 〗</p>
+<p>For each output neuron 𝑜<em>𝑗𝑡,  the resulting derivatives or ’explanations’ 𝑏</em>𝑡, 𝑤<em>1𝑡, 𝑤</em>(2𝑡 )…𝑤_𝑝𝑡 generate a new data-flow which is referred to as Linear Parameter Data</p>
+<p>The LPD is a matrix of dimension T ∗ (n + 1), irrespective of the complexity of the neural net, with t−th row denoted by〖 𝐿𝑃𝐷〗<em>𝑡≔(𝑏</em>𝑡, 𝑤<em>1𝑡, 𝑤</em>(2𝑡 )…𝑤_𝑝𝑡)</p>
+<p>The LPD can be interpreted in terms of exact replication of the net by a linear model at each time point t and the natural time-ordering of LPDjt subsequently allows to examine changes of the linear replication as a function of time.</p>
+<p>We are then in a position to assign a meaning to the neural net, at each time point t = 1, ..., T, and to monitor non-linearities of the net or, by extension, possible non-stationarities of the data.</p>

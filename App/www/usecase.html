@@ -1,0 +1,74 @@
+<p>Steps:</p>
+<ul>
+    <li>We train a nnet model</li>
+    <li>We carry out an infinitesimal perturbation of i-th explanatory feature</li>
+    <li>We obtain the predictions from the trained nnet model using the perturbed feature</li>
+    <li>We collect, for each explanatory feature, the perturbated data and the corresponding nn-output</li>
+    <li>We fit a time-varying linear regression</li>
+    <li>We train the net for 100 different random initialization, and we observe the dependency of the LPDs across the
+        different random nets.</li>
+</ul>
+<p>While it is often understood that risk-management (RM) concerns a mitigation of risk by means of diversification
+    (central limit theorem), we here propose a more direct approach towards risk by identifying ’uncertain times’ or
+    ’unusual states’ of the market in real-time</p>
+<ul>
+    <li>Unusual states are identified by episodes during which the dependence structure, as measured by the LPD, is
+        weak.</li>
+    <li>Uncertain times are identified by episodes during which the random nets are inconclusive about the local linear
+        model i.e. times at which the standard deviations σt of the random samples of LPD- (or QPD-) realizations are
+        large.</li>
+</ul>
+<p>In this context, a market-exit (cash-position) is triggered when the dependence structure of the data, as measured by
+    the LPD, is weakening or, in other words, when the net-forecast is less conclusive about next-day’s return. In order
+    to formalize the ’weakness’ concept we assume first that exit-signals have a probability of 1/7, one per week in the
+    mean, which reflects the frequent occurrence of local bursts or disruptions of the BTC: a market exit is then
+    triggered if the LPD drops below its empirical 1/7-quantile. The computation of the quantile is based on a
+    rolling-window of length 100 days, corresponding roughly to the last quarter of observations: we argue that a
+    quarter of data is sufficiently long for resolving the corresponding tail of the distribution, at least with respect
+    to the 1/7-quantile, and it is short enough to adapt for possible structural changes in the BTC7. Finally, we
+    cross-check the proposed RM monitoring-tool by analyzing crossings of the mirrored 1-1/7 upper quantile by the LPD,
+    corresponding to unusually strong dependence</p>
+<div class="image-txt-container">
+    <img src="./images/Picture1.png">
+    <p>
+        Figure. Buy-and-hold (black) vs. Out-of-sample (mean-) LPD market-exit strategy (red): exits (shaded in grey)
+        occur if today’s out-of-sample mean-LPD (green) exceeds the upper 1-1/7 quantile based on a rolling-window of
+        length one quarter of its own history. The LPD corresponding to the lag-6 BTC-value is used
+    </p>
+    <style>
+        .image-txt-container {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        .image-txt-container img {
+            width: 50%;
+        }
+    </style>
+</div>
+<div class="image-txt-container">
+    <img src="./images/Picture3.png">
+    <p>
+        Figure. Buy-and-hold (black) vs. Out-of-sample (mean-) LPD market-exit strategy (red): exits (shaded in grey)
+        occur if today’s out-of-sample mean-LPD (green) exceeds the upper 1-1/7 quantile based on a rolling-window of
+        length one quarter of its own history. The LPD corresponding to the lag-6 BTC-value is used
+
+    </p>
+    <style>
+        .image-txt-container {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        .image-txt-container img {
+            width: 50%;
+        }
+    </style>
+</div>
+
+<p>Discussion:<br>
+    A direct comparison of market-exits in the figures suggests that weak data dependence (LPD below lower quantile)
+    matches by the majority down-turns of the BTC and conversely strong data dependence (LPD above upper quantile)
+    matches by the majority up-turns, thus confirming the original intent and rationale of the proposed RM-strategy</p>

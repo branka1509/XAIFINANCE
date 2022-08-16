@@ -1,0 +1,11 @@
+<p>Data: Bitcoin returns 15-04-2014 to 30-06-2021</p>
+<p>Model: simple feedforward net with a single hidden layer and an input layer collecting the last six lagged (daily) returns: the net is then trained to predict next day’s return based on the MSE-criterion. The number of estimated parameters then amounts to a total of 6 ∗ 100 + 100 = 700 weights and 100 + 1 = 101 biases</p>
+<p>Steps:</p>
+<ul>
+<li>We train a nnet model</li>
+<li>We carry out an infinitesimal perturbation of i-th explanatory feature</li>
+<li>We obtain the predictions from the trained nnet model using the perturbed feature</li>
+<li>We collect, for each explanatory feature, the perturbated data and the corresponding nn-output</li>
+<li>We fit a time-varying linear regression</li>
+<li>We train the net for 100 different random initialization, and we observe the dependency of the LPDs across the different random nets.</li>
+</ul>

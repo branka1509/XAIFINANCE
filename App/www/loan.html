@@ -1,0 +1,56 @@
+<p>The use case is done using data from the U.S. Lending Club platform. LendingClub was a peer- to- peer lending company headquartered in San Francisco, California. It was the first peer- to- peer lender to register its offerings as securities with the Securities and Exchange Commission, and to offer loan trading on a secondary market.</p>
+<p>The raw as well as cleaned dataset is made available though an open- sourced git repository: LINK TO BE ADDED</p>
+<p>In this section, we describe the data pre- processing steps taken.</p>
+<h2 id="step-1">Step 1</h2>
+<p>In supervised predictive modelling, algorithms learn by mapping input factors to a target variable. We cannot fit and evaluate machine learning models on raw data but rather datasets have to be processed and transformed so to fit the requirements of individual machine learning models. Even more importantly, we need to identify a representation of the data that best exposes the underlining patters between the input and output features, given a specific machine learning model. As a result, one of the main and most challenging tasks of any machine learning project is the data pre- processing step.</p>
+<p>Specifically, there is an interplay between the data and the choice of algorithms:</p>
+<ul>
+<li>Some algorithms cannot deal with missing observations</li>
+<li>Some algorithms assume each variable (in some cases including the target feature), to have a specific probability distribution</li>
+<li>Some algorithms are negatively impacted if two or more input variables are highly correlated.</li>
+<li>Some algorithms are known to perform worse if there are input variables that are irrelevant or redundant to the target variable</li>
+<li>Some algorithms have very few requirements concerning the input data, but in turn, may require many examples in order to learn how to make good predictions</li>
+</ul>
+<p>In this project, we developed an automated data pre- processing step, containing the following actions:</p>
+<ul>
+<li>Factorize: Convert character columns in a data.frame to factors</li>
+<li>Binarize: Function to binarize a multiclass dataset</li>
+<li>Target class balance: Undersampling of a data frame with a binary target</li>
+<li>Missing features: add additional columns to a data frame for all numerical columns with at least one missing value.</li>
+<li>Transform: Power transform all numerical positive variables using boxcox transformation</li>
+<li>Group levels of features: Function to group attributes containing free text based on defined key words. Those keywords are given as a vector where earlier keywords have a higher priority than later keywords. For example; if the keywords vector is: c(&quot;Manager&quot;, &quot;operations&quot;) and the text in the observation is &quot;Operations Manager&quot;, the new level will be &quot;manager&quot;.</li>
+</ul>
+<h2 id="step-2-data-quality">Step 2: Data Quality</h2>
+<p>Following, the initial data pre- processing step, we continue the feature selection process. Specifically:</p>
+<ul>
+<li>Dealing with missing features:<ul>
+<li>In the initial data pre- processing step, we created additional columns to the dataframe for all numerical features that have at least one missing value. The objective of this step is to consequently investigate whether the existence of missing values is associated with our target feature (loan_status). For this purpose, we run a chi square test. The null hypothesis of the Chi- Square test is that there is no relationship whereas the alternative hypothesis assumes that there is an association between the two variables. Results: For all 112 variables the p- value was &gt; 0.05 hence we can conclude that the existence of missing observations is not associated with our target.</li>
+<li>Furthermore, we carry- out a 2- step process to deal with the missing features<ul>
+<li>Step 1: cancel columns with over 50% missing observations</li>
+<li>Step 2: row- wise complete cases</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Dealing with highly correlated features: we remove features that are highly correlated (ex. fico_range_low and fico_range_high).</li>
+<li>Factor screening: we carry- out an in- depth analysis of the factor variables included in the dataset. All features for which we observe no variability, are removed from further analysis (ex. hardship_type has only one level: interest only- 3 months deferral.</li>
+</ul>
+<p>Step 3: Feature Selection</p>
+<p>For all data driven models, feature selection can significantly affect model performance. Well- designed features increase models&#39; flexibility and robustness. The literature distinguishes between several different techniques for feature selection:</p>
+<ul>
+<li>Embedded methods - -  where feature selection is an integral part of the ML algorithm</li>
+<li>Filter methods - -  where each feature is assigned a score based on a specific statistical procedure</li>
+<li>Wrapper methods - -  where we compare the predictive utility of ML models that are trained on different coalition of features</li>
+<li>Hybrid methods - -  where we combine at least two of the above- mentioned techniques</li>
+</ul>
+<p>In the context of this project, we applied the Boruta algorithm which arises from the spirit of random forest and further adds randomness to the system. The main idea behind the Boruta algorithm is quite straightforward (Miron Kursa et al. 2010): we make a randomized copy of the system, merge the copy with the original and build the classifier for this extended system. To asses importance of the variable in the original system we compare it with that of the randomized variables. Only variables for whose importance is higher than that of the randomized variables are considered important.</p>
+<p>The applied procedure is as follows (Miron Kursa et al. 2010):</p>
+<ul>
+<li>We build an extended system, with replicated variables which are then randomly permuted. As a result, all correlations between the replicated and original variables are random by design;</li>
+<li>We perform several RF runs</li>
+<li>For each run we compute the importance of all attributes.</li>
+<li>The attribute is deemed important for a single run if its importance is higher than maximal importance of all randomized attributes.</li>
+<li>We perform a statistical test for all attributes. The null hypothesis is that importance of the variable is equal to the maximal importance of the random attributes (MIRA). The test is a two- sided equality test – the hypothesis may be rejected either when importance of the attribute is significantly higher or significantly lower than MIRA. For each attribute we count how many times the importance of the attribute was higher than MIRA (a hit is recorded for the variable).</li>
+<li>Variables which are deemed unimportant are removed from the information system, usually with their randomized mirror pair.</li>
+<li>The procedure is performed for predefined number of iterations, or until all attributes are either rejected or conclusively deemed important, whichever comes first</li>
+</ul>
