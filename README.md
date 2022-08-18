@@ -21,10 +21,10 @@ In this context the repository contains all the scripts used for:
 ### Folder structure for the credit risk modelling use case 
 
 * data: 
-*   raw 
-*   beta_data, after inital feature selection step 
-*   alpha_data, after secondary (boruta) feature selection
-*   final dataset, used for the analysis conducted 
+**   raw 
+**   beta_data, after inital feature selection step 
+**   alpha_data, after secondary (boruta) feature selection
+**   final dataset, used for the analysis conducted 
 * models: contains all the developed models
 * notebooks: All RMarkdown notebooks created in the project
 * functions
