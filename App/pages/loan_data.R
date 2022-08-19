@@ -1,6 +1,3 @@
-# plots for the loan_data
-# https://github.zhaw.ch/IWA/xai/blob/master/2022_repo/Loan%20Performance%20Use%20Case/05_data_summary_and_visualization.Rmd
-
 loanDataUi <- function(id){
   ns <- NS(id)
   tabItem(
@@ -45,14 +42,12 @@ loanDataUi <- function(id){
 }
 
 loanDataServer <- function(id){
-  
   moduleServer(
     id,
     function(input, output, session){
       ns <- NS(id)
       # load the dataset
-      df <- readRDS("data/clean/df_post_data_explor.rds")
-      # dictionary <- read_excel("data/clean/LCDataDictionary.xlsx")
+      df <- readRDS("./data/clean/df_post_data_explor.rds")
       loan_columns <- colnames(df[, !names(df) %in% c("loan_status")])
       # calculate correlations
       correlations <- df %>% 

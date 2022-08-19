@@ -69,7 +69,7 @@ library("shapper")
 library("neuralnet")
 library("DALEX")
 
-
+print("Loading Pages")
 source("pages/start.R")
 source("pages/loan.R")
 source("pages/loan_pre.R")
@@ -87,9 +87,9 @@ source("pages/ts_exploration.R")
 source("pages/ts_classic.R")
 
 # load data
-load("~/GitHub/xai-app/app/data/clean/bitcoin.Rdata")
+load("~/GitHub/XAIFINANCE/app/data/clean/bitcoin.Rdata")
 # load data from environment
-env_files <- list.files("~/GitHub/xai-app/app/data/environment", pattern="*.RData", full.names=FALSE)
+env_files <- list.files("~/GitHub/XAIFINANCE/app/data/environment", pattern="*.RData", full.names=FALSE)
 existing_files <- objects()
 
 for (file in env_files){
@@ -98,7 +98,7 @@ for (file in env_files){
     print(paste0("File already exists: ", file_name))
   } else{
     print(paste0("Loading file: ", file_name))
-    load(paste0("~/GitHub/xai-app/app/data/environment/",file))
+    load(paste0("~/GitHub/XAIFINANCE/app/data/environment/",file))
   }
 }
 

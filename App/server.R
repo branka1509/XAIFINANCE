@@ -1,3 +1,4 @@
+print("loading servers")
 shinyServer(function(input, output, session){
   loanDataServer("loan_data")
   loanDataSingleServer("loan_data_single")

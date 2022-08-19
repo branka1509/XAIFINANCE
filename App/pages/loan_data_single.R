@@ -10,20 +10,25 @@ loanDataSingleUi <- function(id){
         box(width=12,h2("Single Data Exploration"))
       ),
       fluidRow(
-        column(12,
+        box(width=12,textOutput(ns("overview")))
+      ),
+      fluidRow(
+        column(6,
                box(
                  uiOutput(ns("input_var")),
                  width = 12)
         ),
+        column(6,
+               box(width = 12, textOutput(ns("description")))
+        )
+      ),
+        
       fluidRow(
-        column(6,
-          box(width = 12, textOutput(ns("description")))
-          ),
-        column(6,
+        column(12,
                box(
                  dataTableOutput(ns("var_descr")),
                  width = 12)
-        ),
+        )
       ),
       fluidRow(
         column(6,
@@ -55,7 +60,6 @@ loanDataSingleUi <- function(id){
       ),
     )
   ) 
-  )
 }
 
 loanDataSingleServer <- function(id){
@@ -191,6 +195,7 @@ loanDataSingleServer <- function(id){
       
       output$det_fit <- renderUI({reg <- fit() %>% export_summs(number_format = "%.2f") 
                                   HTML(huxtable::to_html(reg))})
+      output$overview <- renderText("This tab allows you to explore a single feature included in the dataset. Specifically, you are able to explore univariate graphs which in turn plot the distribution of data from a single variable. The variable can be categorical (e.g., loan purpose, loan status) or quantitative (e.g., annual income, loan amount). Furthermore, the tab allows you to print basic statistics for the selected variable and observe the dependence of the selected feature with the key variable of interest (the status of the loan).")
       }
       )
 }

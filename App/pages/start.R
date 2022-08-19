@@ -1,5 +1,5 @@
+print("Loading Start page")
 startUi <- function(id){
-  ns <- NS(id)
   tabItem(
     tabName = id,
     fluidPage(
