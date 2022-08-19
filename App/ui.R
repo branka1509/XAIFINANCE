@@ -1,20 +1,20 @@
 sidebar <- dashboardSidebar(
   sidebarMenu(
     shinydashboard::menuItem("Start Page", tabName = "start", icon = shiny::icon("play"), selected = TRUE),
-    shinydashboard::menuItem("Loan Performance", tabName = "loan", icon = shiny::icon("wallet")),
+    shinydashboard::menuItem("Loan Performance", tabName = "loan", icon = shiny::icon("wallet"),
     # shinydashboard::menuSubItem("Pre Processing", tabName = "loan_pre", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Data Exploration", tabName = "loan_data", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Single Data Exploration", tabName = "loan_data_single", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Multiple Data Exploration", tabName = "loan_data_multiple", icon = shiny::icon("wallet")),
-    shinydashboard::menuSubItem("Models", tabName = "loan_models", icon = shiny::icon("wallet")),
+    shinydashboard::menuSubItem("ML & DL Modeling", tabName = "loan_models", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Explainability", tabName = "loan_explainability", icon = shiny::icon("wallet")),
-    shinydashboard::menuSubItem("Stability", tabName = "loan_stability", icon = shiny::icon("wallet")),
-    shinydashboard::menuItem("Time Series", tabName = "time", icon = shiny::icon("chart-line")),
-    shinydashboard::menuItem("Data Exploration", tabName = "ts_data", icon = shiny::icon("chart-line")),
-    shinydashboard::menuItem("Modelling", tabName = "ts_modelling", icon = shiny::icon("chart-line")),
+    shinydashboard::menuSubItem("Stability of Prediction", tabName = "loan_stability", icon = shiny::icon("wallet"))),
+    shinydashboard::menuItem("Time Series", tabName = "time", icon = shiny::icon("chart-line"),
+    shinydashboard::menuSubItem("Data Exploration", tabName = "ts_data", icon = shiny::icon("chart-line")),
+    shinydashboard::menuSubItem("Modelling & Performance", tabName = "ts_modelling", icon = shiny::icon("chart-line")),
     # shinydashboard::menuItem("Classic XAI", tabName = "ts_classic", icon = shiny::icon("chart-line")),
-    shinydashboard::menuItem("X-Function", tabName = "ts_xfunction", icon = shiny::icon("chart-line")),
-    shinydashboard::menuItem("Use Case", tabName = "ts_usecase", icon = shiny::icon("chart-line"))
+    shinydashboard::menuSubItem("X-Function", tabName = "ts_xfunction", icon = shiny::icon("chart-line")),
+    shinydashboard::menuSubItem("Application", tabName = "ts_usecase", icon = shiny::icon("chart-line")))
   )
 )
 
@@ -41,7 +41,7 @@ body <- dashboardBody(
 
 
 dashboardPage(
-  skin = "black",
+  skin = "blue",
   header = dashboardHeader(title = "Explainable AI"),
   sidebar = sidebar,
   body = body
