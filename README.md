@@ -1,4 +1,4 @@
-# Towards explainable AI in Credit Risk Management
+# Towards eXplainable AI in Financial Applications 
 
 This repository contains the code to the explainable AI project funded by Innosuisse xxx project. In this project, we aim to build a VA framework which will enable users to get some insights into the innerworkings of ML models as applied to financial problem sets. Specifically, we consider two different use cases:
 *   credit riks modelling 
@@ -21,10 +21,10 @@ In this context the repository contains all the scripts used for:
 ### Folder structure for the credit risk modelling use case 
 
 * data: 
-*   raw 
-*   beta_data, after inital feature selection step 
-*   alpha_data, after secondary (boruta) feature selection
-*   final dataset, used for the analysis conducted 
+**   raw 
+**   beta_data, after inital feature selection step 
+**   alpha_data, after secondary (boruta) feature selection
+**   final dataset, used for the analysis conducted 
 * models: contains all the developed models
 * notebooks: All RMarkdown notebooks created in the project
 * functions
