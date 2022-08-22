@@ -1,0 +1,11 @@
+## Overview
+In this tab you can explore the overall utility of the LPD approach proposed in this use case both in terms of explainability for network networks applied to financial time series as well as for risk management in general.
+
+## Explainability
+Since the LPD corresponds to the parameters of a (time-dependent) linear replication of the net, synthetic t-statistics could be computed for inferring the relevance of the explanatory variables by computing the ratio of mean-LPD and standard-deviation.
+$$t_t∶=LPD_t / \sigma_t$$
+
+at each time point t, corresponding to (a vector of) synthetic t-statistics, one for each input variable. This in turn, means that we can obtain a mean magnitude of impact of the individual inputs and a statistical test of the importance of this feature. Most importantly, the inferred importance was not obtained though a perturbation-based methods but rather though an approach that respects and preserves the natural time ordering in the data. 
+
+## Financial risk management
+Our initial insights suggest that the time-varying dependency of the data measured by the LPDs is indicative of different states of the market. In particular weak dependency (small absolute LPD) is an indicator of randomness or  ‘chaos’ (see figure below). If we put this into a financial risk management context, we can use the signals from the LPD to direct our trading strategy. Specifically, we can propose a simple rule for managing risks: exit markets at times tagged as chaotic by the LPD.

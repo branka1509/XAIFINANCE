@@ -5,7 +5,7 @@ tsModellingUi <- function(id, label = "loan"){
     fluidPage(
       fluidRow(
         box(width = 12,
-            column(width = 12, includeHTML("./www/modelling.html")))
+            column(width = 12, withMathJax(includeMarkdown("./www/modelling.Rmd"))))
         
       )
     )

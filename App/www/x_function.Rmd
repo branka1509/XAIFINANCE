@@ -1,0 +1,37 @@
+---
+output: 
+  html_document:
+    mathjax: "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+---
+
+## Overview
+
+In this tab we provide in-depth explanation of the X-functions specifically tailored for financial time series that the research team developed. The methodology was first proposed in a paper by Wildi and Hadji Misheva (2022) which is made available at the following link: <https://www.explainableaiforfinance.com/repository-of-papers>
+
+## Description of Methodology
+
+In order to preserve data-integrity as well as model-integrity we propose to analyze the effect of infinitesimal changes of the explanatory variables on some function of the net-output at each time-point t = 1, ..., T.
+
+Specifically, we start from the simplest case in which the X-function is the identity, so the X-function of the output is the output, and we calculate the derivative, $w_{it}:=\partial o_t/\partial x_{it}$, $i=1,...,m$, for each explanatory variable $x_{it}$ as a function of time. This in turn gives us the sensitivities of the outputs for each explanatory variable in the net over time, t = 1, ..., T.
+
+In order to complete the 'explanation' derived from the identity $ef(\cdot)=Id$, one can add a synthetic intercept to each output neuron ![](file:///C:/Users/Admin/AppData/Local/Temp/msohtmlclip1/01/clip_image002.png) defined according to:
+
+\$\$ \begin{eqnarray}\label{intercept}
+
+b_t:=o_t-\sum_{i=1}^m w_{it}x_{it}
+
+\end{eqnarray} \$\$
+
+For each output neuron ![](file:///C:/Users/Admin/AppData/Local/Temp/msohtmlclip1/01/clip_image002.png), the resulting derivatives or 'explanations' $b_t,w_{1t},...,w_{mt}$ generate a new data-flow which is referred to as **Linear Parameter Data (LPDs)**. The LPD is a matrix of dimension T ∗ (n + 1), irrespective of the complexity of the neural net, with t−th row denoted by![](file:///C:/Users/Admin/AppData/Local/Temp/msohtmlclip1/01/clip_image006.png)$LPD_t:=(b_t,w_{1t},...,w_{mt})$.
+
+**Intuition:** The LPD can be interpreted in terms of **exact replication of the net by a linear model at each time point t** and the natural time-ordering of LPDs subsequently allows to examine changes of the linear replication as a function of time.
+
+With the algorithm developed, for each output neuron, we obtain the derivatives (which in turn are the new data-flow we call LPDs). In order to give an intuition as to the sensitivities/explanations we want to obtain let's imagine the following brute approach:
+
+-   We start by training a neural network (NN) on the specified inputs and response and store the results
+-   Next, we perturb a selected input slightly
+-   We use the trained NN and make the predictions for the changed inputs
+-   For each changed variable, we collect the perturbed data and the corresponding NN-output and we fit a linear model and obtain the weights.
+-   We train the net for 100 different random initialization and **we observe the dependency of the LPDs across the different random nets.**
+
+By using the derivatives approach, **we are in turn obtaining the exact sensitivities of the outputs** for each explanatory variable in the net over time, without recomputing perturbated outputs based on perturbated inputs and without refitting.

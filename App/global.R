@@ -68,6 +68,7 @@ library("h2o")
 library("shapper")
 library("neuralnet")
 library("DALEX")
+library("markdown")
 
 source("pages/start.R")
 source("pages/loan.R")

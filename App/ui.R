@@ -16,7 +16,7 @@ sidebar <- dashboardSidebar(
     shinydashboard::menuSubItem("Modelling", tabName = "ts_modelling", icon = shiny::icon("chart-line")),
     # shinydashboard::menuItem("Classic XAI", tabName = "ts_classic", icon = shiny::icon("chart-line")),
     shinydashboard::menuSubItem("X-Function", tabName = "ts_xfunction", icon = shiny::icon("chart-line")),
-    shinydashboard::menuSubItem("Use Case", tabName = "ts_usecase", icon = shiny::icon("chart-line")))
+    shinydashboard::menuSubItem("Application", tabName = "ts_usecase", icon = shiny::icon("chart-line")))
   )
 )
 
