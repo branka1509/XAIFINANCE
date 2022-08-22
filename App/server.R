@@ -1,4 +1,3 @@
-print("loading servers")
 shinyServer(function(input, output, session){
   loanDataServer("loan_data")
   loanDataSingleServer("loan_data_single")
@@ -8,5 +7,5 @@ shinyServer(function(input, output, session){
   loanExplainabilityServer("loan_explainability")
   loanStabilityServer("loan_stability")
   tsExplorationServer("ts_data")
-  # tsClassicServer("ts_calssic")
+  tsClassicServer("ts_classic")
 })

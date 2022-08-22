@@ -10,11 +10,7 @@ Specifically, we start from the simplest case in which the X-function is the ide
 
 In order to complete the 'explanation' derived from the identity $ef(\cdot)=Id$, one can add a synthetic intercept to each output neuron ![](file:///C:/Users/Admin/AppData/Local/Temp/msohtmlclip1/01/clip_image002.png) defined according to:
 
-\$\$ \begin{eqnarray}\label{intercept}
-
-b_t:=o_t-\sum_{i=1}^m w_{it}x_{it}
-
-\end{eqnarray} \$\$
+$$b_t:=o_t-\sum_{i=1}^m w_{it}x_{it}$$
 
 For each output neuron ![](file:///C:/Users/Admin/AppData/Local/Temp/msohtmlclip1/01/clip_image002.png), the resulting derivatives or 'explanations' $b_t,w_{1t},...,w_{mt}$ generate a new data-flow which is referred to as **Linear Parameter Data (LPDs)**. The LPD is a matrix of dimension T ∗ (n + 1), irrespective of the complexity of the neural net, with t−th row denoted by![](file:///C:/Users/Admin/AppData/Local/Temp/msohtmlclip1/01/clip_image006.png)$LPD_t:=(b_t,w_{1t},...,w_{mt})$.
 
