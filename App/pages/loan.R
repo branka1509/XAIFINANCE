@@ -4,7 +4,7 @@ loanUi <- function(id, label = "loan"){
     tabName = id,
     fluidPage(
       fluidRow(
-        box(width = 12, title = "Project Description",
+        box(width = 12, title = "Data description & pre-procesing",
             column(width = 12, withMathJax(includeMarkdown("./www/loan.Rmd"))))
     
         )

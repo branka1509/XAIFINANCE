@@ -2,8 +2,7 @@ sidebar <- dashboardSidebar(
   sidebarMenu(
     shinydashboard::menuItem("Start Page", tabName = "start", icon = shiny::icon("play"), selected = TRUE),
     shinydashboard::menuItem("Loan", tabName = "loan_page", icon = shiny::icon("wallet"),
-    shinydashboard::menuSubItem("Loan Performance", tabName = "loan", icon = shiny::icon("wallet")),
-    # shinydashboard::menuSubItem("Pre Processing", tabName = "loan_pre", icon = shiny::icon("wallet")),
+    shinydashboard::menuSubItem("Data Pre-Procesing", tabName = "loan", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Data Exploration", tabName = "loan_data", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Single Data Exploration", tabName = "loan_data_single", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Multiple Data Exploration", tabName = "loan_data_multiple", icon = shiny::icon("wallet")),
@@ -11,10 +10,10 @@ sidebar <- dashboardSidebar(
     shinydashboard::menuSubItem("Explainability", tabName = "loan_explainability", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Stability", tabName = "loan_stability", icon = shiny::icon("wallet"))),
     shinydashboard::menuItem("Time Series", tabName = "time_page", icon = shiny::icon("chart-line"),
-    shinydashboard::menuSubItem("Time Series", tabName = "time", icon = shiny::icon("chart-line")),
+    # shinydashboard::menuSubItem("Time Series", tabName = "time", icon = shiny::icon("chart-line")),
     shinydashboard::menuSubItem("Data Exploration", tabName = "ts_data", icon = shiny::icon("chart-line")),
-    shinydashboard::menuSubItem("Modelling", tabName = "ts_modelling", icon = shiny::icon("chart-line")),
-    # shinydashboard::menuItem("Classic XAI", tabName = "ts_classic", icon = shiny::icon("chart-line")),
+    shinydashboard::menuSubItem("Modelling & Performance", tabName = "ts_modelling", icon = shiny::icon("chart-line")),
+    shinydashboard::menuSubItem("Classic XAI", tabName = "ts_classic", icon = shiny::icon("chart-line")),
     shinydashboard::menuSubItem("X-Function", tabName = "ts_xfunction", icon = shiny::icon("chart-line")),
     shinydashboard::menuSubItem("Application", tabName = "ts_usecase", icon = shiny::icon("chart-line")))
   )

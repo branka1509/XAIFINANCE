@@ -9,6 +9,8 @@ tsClassicUi <- function(id){
       fluidRow(
         box(width=12,h2("Time Series Classic XAI"))),
       fluidRow(
+        box(width=12,withMathJax(includeMarkdown("www/classic_top.Rmd")))),
+      fluidRow(
         column(width = 6,
                box(width = 12,
                    plotOutput(ns("varimp")))
@@ -31,6 +33,8 @@ tsClassicUi <- function(id){
                box(width = 12,
                    textOutput(ns("text"))))
       ),
+      fluidRow(
+        box(width=12,withMathJax(includeMarkdown("www/classic_bottom.Rmd")))),
     )
   )
 }

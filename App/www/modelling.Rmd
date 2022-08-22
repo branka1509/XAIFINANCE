@@ -4,7 +4,7 @@ This tab allows you to explore the performance of a simple neural network (NN) t
 
 ## Visualization of the trained model
 
-## ![Neural net BTC: feedforward net with a single hidden-layer of dimension 100 and an input layer of dimension 6 comprising the last six lagged returns](images/neural_net.png)
+## ![Neural net BTC: feedforward net with a single hidden-layer of dimension 100 and an input layer of dimension 6 comprising the last six lagged returns](images/neural_net.png){width="75%"}
 
 **Image 1:** Neural net BTC: feedforward net with a single hidden-layer of dimension 100 and an input layer of dimension 6 comprising the last six lagged returns
 
@@ -12,6 +12,6 @@ This tab allows you to explore the performance of a simple neural network (NN) t
 
 Next, we optimize the net 100-times, based on different random initializations of its parameters, and we compute trading performances of each random-net based on the simple sign-rule: buy or sell tomorrow's return depending on the sign of the NN's forecast. We further, compare the performance of the NN with a simple buy-and-hold strategy. The resulting cohort of cumulated (out-of-sample) trading performances is displayed in the Figure below with the mean-performance in the center (bold blue line). Remarkably, even the least performing net outperforms the buyand-hold benchmark (lower black line) in the considered out-of-sample span and the net-cohort systematically mitigates draw-downs of the BTC at the expense of slightly weaker growth during hefty upswings.
 
-![](images/sign_rule.png)
+![](images/sign_rule.png){width="75%"}
 
 **Image 2:** Cumulated log-performances out-of-sample based on sign-rule (buy or sell depending on sign of forecasted return): 'random' neural nets (colored) vs. buy-and-hold (bold black) and mean-net performance (bold blue)

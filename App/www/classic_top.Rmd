@@ -1,0 +1,10 @@
+## Overview
+
+This tab allows you to explore the classic explainability tools as applied to our NN model trained to predict the Bitcoin's returns using 6 lagged (daily values). Specifically, you can choose which explanations you want to visualize among the following choices:
+
+-   **The variable importance plot --** This plot shows the relative importance of the most important variables in the model
+-   **Partial dependence plot (PDP) --** This gives a graphical depiction of the marginal effect of a variable on the response. The effect of a variable is measured in change in the mean response. PDP assumes independence between the feature for which is the PDP computed and the rest.
+-   **Individual Conditional Expectation (ICE) --** This plot gives a graphical depiction of the marginal effect of a variable on the response. ICE plots are similar to partial dependence plots (PDP); PDP shows the average effect of a feature while ICE plot shows the effect for a single instance. This function will plot the effect for each decile. In contrast to the PDP, ICE plots can provide more insight, especially when there is stronger feature interaction.
+-   **(local) SHAP row-specific explanations --** This method shows contribution of features for a given instance. The sum of the feature contributions and the bias term is equal to the raw prediction of the model, i.e., prediction before applying inverse link function. H2O implements TreeSHAP which when the features are correlated, can increase contribution of a feature that had no influence on the prediction.
+
+For each of the selected explainability techniques, an interpretation is also printed.

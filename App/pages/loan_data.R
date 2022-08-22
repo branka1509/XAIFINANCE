@@ -6,6 +6,16 @@ loanDataUi <- function(id){
       fluidRow(
         box(width=12,h2("Data Exploration"))),
       fluidRow(
+        box(width=12,textOutput(ns("overview")))),
+      fluidRow(
+        column(12,
+               box(
+                 title = "Shortcuts and Feature Names",
+                 dataTableOutput(ns("dict")),
+                 width = 12
+               ))
+      ),
+      fluidRow(
         column(12,
                box(
                  title = "Numeric Variables",
@@ -49,6 +59,7 @@ loanDataServer <- function(id){
       # load the dataset
       df <- readRDS("./data/clean/df_post_data_explor.rds")
       loan_columns <- colnames(df[, !names(df) %in% c("loan_status")])
+      dictionary <- read_excel("data/clean/LCDataDictionary.xlsx")
       # calculate correlations
       correlations <- df %>% 
         keep(is.numeric) %>%
@@ -57,11 +68,12 @@ loanDataServer <- function(id){
       p_value_mat <- ggcorrplot::cor_pmat(numeric)
       
       key_vars = df[, c("loan_amnt", "annual_inc", "dti", "fico_range_low", "revol_bal")]
-      
+      output$dict <- renderDataTable({dictionary})
       output$num_table <- renderDataTable({select_if(df,is.numeric) %>% sumtable(out = "return")})
       output$cat_table <- renderDataTable({select_if(df,is.factor) %>% sumtable(out = "return")})
       output$corr_plot <- renderPlot({ggcorrplot(correlations, type = "lower", p.mat = p_value_mat)}, height = 1000)
       output$corr_chart <- renderPlot({chart.Correlation(key_vars, histogram=TRUE, pch=19)})
+      output$overview <- renderText("This tab allows you to explore the numeric and categorical features of the processed dataset which is further used for training different machine learning (ML) and deep learning (DL) models on predicting the status of the loan.")
     }
   )
 }
