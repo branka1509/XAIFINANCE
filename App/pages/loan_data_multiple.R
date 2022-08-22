@@ -11,6 +11,10 @@ loanDataMultipleUi <- function(id){
             h2("Multiple Data Exploration"))
       ),
       fluidRow(
+        box(width=12,
+            textOutput(ns("overview")))
+      ),
+      fluidRow(
         column(6,
                box(
                  uiOutput(ns("input_var_1")),
@@ -173,6 +177,9 @@ loanDataMultipleServer <- function(id){
       })
       output$dynamic_plot <- renderUI({
         plotOutput(ns("stacked_scatter"), height = plotHeight())
+      })
+      output$overview <- renderText({
+        "This tab allows you to explore bivariate graphs which in turn display the relationship between two variables. The type of graph will depend on the measurement level of the variables (whether the variables are categorical or quantitative)."
       })
     }
   )
