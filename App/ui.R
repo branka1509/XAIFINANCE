@@ -10,12 +10,13 @@ sidebar <- dashboardSidebar(
     shinydashboard::menuSubItem("Models", tabName = "loan_models", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Explainability", tabName = "loan_explainability", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Stability", tabName = "loan_stability", icon = shiny::icon("wallet"))),
-    shinydashboard::menuItem("Time Series", tabName = "time", icon = shiny::icon("chart-line")),
-    shinydashboard::menuItem("Data Exploration", tabName = "ts_data", icon = shiny::icon("chart-line")),
-    shinydashboard::menuItem("Modelling", tabName = "ts_modelling", icon = shiny::icon("chart-line")),
+    shinydashboard::menuItem("Time Series", tabName = "time_page", icon = shiny::icon("chart-line"),
+    shinydashboard::menuSubItem("Time Series", tabName = "time", icon = shiny::icon("chart-line")),
+    shinydashboard::menuSubItem("Data Exploration", tabName = "ts_data", icon = shiny::icon("chart-line")),
+    shinydashboard::menuSubItem("Modelling", tabName = "ts_modelling", icon = shiny::icon("chart-line")),
     # shinydashboard::menuItem("Classic XAI", tabName = "ts_classic", icon = shiny::icon("chart-line")),
-    shinydashboard::menuItem("X-Function", tabName = "ts_xfunction", icon = shiny::icon("chart-line")),
-    shinydashboard::menuItem("Use Case", tabName = "ts_usecase", icon = shiny::icon("chart-line"))
+    shinydashboard::menuSubItem("X-Function", tabName = "ts_xfunction", icon = shiny::icon("chart-line")),
+    shinydashboard::menuSubItem("Use Case", tabName = "ts_usecase", icon = shiny::icon("chart-line")))
   )
 )
 
