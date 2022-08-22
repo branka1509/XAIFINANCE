@@ -69,7 +69,6 @@ library("shapper")
 library("neuralnet")
 library("DALEX")
 
-print("Loading Pages")
 source("pages/start.R")
 source("pages/loan.R")
 source("pages/loan_pre.R")
