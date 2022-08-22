@@ -10,6 +10,9 @@ loanStabilityUi <- function(id){
         box(width=12,h2("Loan Stability"))
       ),
       fluidRow(
+        box(width=12,withMathJax(includeMarkdown("./www/loan_stability.Rmd")))
+      ),
+      fluidRow(
         column(6,
                box(
                  uiOutput(ns("feature")),
@@ -26,7 +29,7 @@ loanStabilityUi <- function(id){
         ),
         column(6,
                box(
-                 textOutput(ns("interp")),
+                 span(textOutput(ns("interp")), style="font-size:15px"),
                  width = 12)
         ),
       ),
@@ -77,14 +80,14 @@ loanStabilityServer <- function(id){
       output$table <- renderDataTable({
         DT::datatable(stability())
       })
-      output$interp <- renderPrint({
-        cat("In this context, the relative change of the PD with respect to the change in the variable is ",
-            stability()[3]/stability()[4], ". Put differently, for a change in the variable of", stability()[4], 
-            " the estimated PD changed by: ", stability()[3], 
+      output$interp <- renderText({
+        paste0("In this context, the relative change of the PD with respect to the change in the variable is ",
+            round(stability()[3]/stability()[4],4), ". Put differently, for a change in the variable of", round(stability()[4],4), 
+            " the estimated PD changed by: ", round(stability()[3],4), 
             ". Moreover, the same change in the variable, resulted in a change of the overall predictive utility of the model by ", 
-            stability()[1]/stability()[4], ". The slight change in the input feature further resulted in ", stability()[7], 
+            round(stability()[1]/stability()[4],4), ". The slight change in the input feature further resulted in ", round(stability()[7],4), 
             " loan contracts being reclassifed. Finally, we fit a linear model to estimate the impact of the change of the variable to the change in the prediction. The results indicate a coefficient of ", 
-            stability()[9], "and a p-value of ", stability()[10])
+            round(stability()[9],4), " and a p-value of ", round(stability()[10],4))
       })
     }
   )

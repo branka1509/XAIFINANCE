@@ -1,0 +1,101 @@
+# XAI for Financial Application
+![](images/logo.png)
+
+
+
+## OVERVIEW
+
+This VA tool is produced as part of the work done under the Innosuisse Project 41084.1 IP-SBM: Towards Explainable Artificial Intelligence and Machine Learning in Credit Risk Management. Under this project, we build a VA tool which will enable users to get insights into the innerworkings of ML models as applied to financial problem sets.
+
+Specifically, we consider two different use cases:
+
+-   credit risk modelling
+
+-   financial time series forecasting
+
+## WHERE TO FIND MORE?
+
+Details concerning the overall objective of the project, the methodologies developed, published papers & more are available on the project\'s website: <https://www.explainableaiforfinance.com/>
+
+## ![](images/overview.png)
+
+**APP STRUCTURE & PROPERTIES**
+
+### Credit risk modelling
+
+![](images/credit_score.png)
+
+The first use case allows users to obtain insights into building and evaluating ML-based models for credit risk management i.e. models that are trained to discriminate between loan contracts that default vs those that do not default. Specifically, the app allows users to understand the end-to-end process of
+building ML models for such a use case and obtain detailed explanation & interpretations of the results though a \'financial analysts\' lenses. As such, the tool is useful both a technical and non-technical audience.
+
+*Properties*
+
+**Data exploration --** The modelling is done using real loan performance data sourced from a P2P
+lending platform that operated on the U.S. lending market. Details on the source data can be obtained at the following link: ..... The app allows users to explore the dataset used in this use case though various summary statistics and univariate & multivariate visualization plots.
+
+**Data pre-processing --** The app allows users to work with a fully processed dataset.
+In supervised predictive modelling, algorithms learn by mapping input factors
+to a target variable. We cannot fit and evaluate machine learning models on raw
+data but rather datasets have to be processed and transformed so to fit the
+requirements of individual machine learning models. Even more importantly, we
+need to identify a representation of the data that best exposes the underlining
+patters between the input and output features, given a specific machine
+learning model. As a result, one of the main and most challenging tasks of any
+machine learning project is the data pre-processing step.
+
+The app allows users to understand the full process of data pre-processing
+necessary for a task like credit risk evaluation.
+
+**Machine learning (ML) & Deep learning (DL) models --** The app allows users to
+explore the results from trained ML & DL models applied to the problem of
+credit risk. Specifically, users can select the type of model they would like
+to evaluate and obtain the results concerning that model from a great variety
+of evaluation metrices. Considering that the app is also intended to help a
+non-technical audience as well, each evaluation criteria is explained and the
+results are interpreted.
+
+**Explainability --** The app allows users to extract understandable explanations concerning the predictions
+made by the black-box, ML model. Similarly, as with the ML models functionality,
+here as well users can select the specific ML model and the type of
+explainability that they would like to evaluate. The results include different
+visualizations including: feature importance plot, dependency plots etc., all
+of which are companies with interpretations as well as an overall score of how
+aliened the model is with financial logic.  
+
+**Stability of predictions --** the app also allows users to test the stability of the predictions obtained by
+the different ML & DL models. Namely, the user can check the performance of
+ML models applied to the original data and compare them with results obtained
+from the same ML models only with slightly perturbed (changed input features).
+Specifically, users can choose to add different levels of noise to selected
+features and they observe the changes in outputs that this cause. Users can
+check the changes in the predictive utility of the ML model as well as the
+number of loan contracts that have been reclassified due to the small change in
+inputs.
+
+### Explainability for financial time series
+
+The second use case allows users to obtain insights into running explanability
+techniques on models applied to financial time series data. The research team
+has developed a method for obtaining explanations which respects &
+maintains the natural time sequence of data. This use case guides users though:
+
+-   the issues with applying classical explainability models on financial time series,
+
+-   the methodology developed which preserves and exploits the natural time ordering of the data and allows us to understand the sensitivities of the output to small changes in inputs over time
+
+-   the application of this methodology beyond explainability (i.e., for financial risk management)
+
+**Data exploration --** The financial time series use case is developed using Bitcoin prices between
+the period 15-04-2014 to 30-06-2021. The app allows users to explore the dataset used in this use case though various summary statistics & visualizations.
+
+**Modelling description & performance --** The app allows users to observe the results from a trained simple neural network (NN) and compare the trading performance of the trained NN vs a simple trading strategy (i.e. a buy-and-hold strategy)
+
+**Classic XAI on financial time series --** The app guides users though the issues in applying classic, state-of-art explainability methods on financial time series.
+
+**X-functions --** The app guides users though the developed X-functions that are specifically suited for explaining models applied to financial time series.
+
+**Applications --** The app allows users
+insights into the risk management applications that the developed x-functions
+can have.
+
+

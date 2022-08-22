@@ -9,6 +9,10 @@ loanExplainabilityUi <- function(id){
       fluidRow(
         box(width=12,h2("Data Explainability"))),
       fluidRow(
+        box(width = 12,
+            column(width = 12, withMathJax(includeMarkdown("./www/loan_explainability.Rmd"))))
+      ),
+      fluidRow(
         column(6,
                box(
                  uiOutput(ns("model")),

@@ -5,7 +5,7 @@ startUi <- function(id){
     fluidPage(
       fluidRow(
         box(width = 12, title = "Project Description",
-        column(width = 12, includeHTML("./www/start_page.html")))
+        column(width = 12, withMathJax(includeMarkdown("./www/start_page.Rmd"))))
       )
     )
   )

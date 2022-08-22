@@ -1,0 +1,22 @@
+## Overview
+
+This tab allows you to explore the performance of different ML & DL models as applied to the credit risk use case. In all cases, the specification of the function remains the same:
+
+-   **the dependent variable (y)** is the status of the loan. This is a binary variable that takes on the value 1, if the loan contract defaulted and zero otherwise.
+-   **the independent variables are 56 features of the preprocessed dataset** including: emp_length, purpose, verification_status_joint, home_ownership, verification_status, initial_list_status, application_type, term, loan_amnt, annual_inc,dti, fico_range_low, inq_last_6mths, revol_bal, revol_util, total_acc, tot_coll_amt, tot_cur_bal open_acc_6m, open_act_il, open_il_12m, open_il_24m, mths_since_rcnt_il, total_bal_il, open_rv_12m, open_rv_24m, max_bal_bc, all_util, total_rev_hi_lim, inq_fi , total_cu_tl , inq_last_12m, acc_open_past_24mths, avg_cur_bal, bc_open_to_buy, bc_util, mo_sin_old_il_acct, mo_sin_old_rev_tl_op, mo_sin_rcnt_rev_tl_op, mo_sin_rcnt_tl, mort_acc, mths_since_recent_bc, mths_since_recent_inq, num_actv_bc_tl, num_actv_rev_tl, num_bc_sats , num_bc_tl , num_il_tl, num_op_rev_tl, num_rev_accts , num_sats, num_tl_op_past_12m, pct_tl_nvr_dlq, percent_bc_gt_75, pub_rec_bankruptcies, total_bc_limit
+
+Among the class of models, you can choose:
+
+-   DRF (This includes both the Distributed Random Forest (DRF) and Extremely Randomised Trees (XRT) models.)
+-   GLM (Generalised Linear Model with regularisation)
+-   XGBoost (XGBoost GBM)
+-   GBM (H2O GBM)
+-   DeepLearning (Fully-connected multi-layer artificial neural network)
+-   StackedEnsemble (Stacked Ensembles, includes an ensemble of all the base models and ensembles using subsets of the base models)
+
+Once you select the class, you can then print the results of the best-performing model within that class. Of course, since there are different metrics on the basis of which you can evaluate a model, you need to also select the specific criteria on which the model is selected. In this context, you can choose between:
+
+-   **AUC** - This model metric is used to evaluate how well a binary classification model is able to distinguish between true positives and false positives. An AUC of 1 indicates a perfect classifier, while an AUC of .5 indicates a poor classifier, whose performance is no better than random guessing. (Tip: AUC is usually not the best metric for an imbalanced binary target because a high number of True Negatives can cause the AUC to look inflated. For an imbalanced binary target, we recommend AUCPR or MCC.)
+-   **AUCPR** - This model metric is used to evaluate how well a binary classification model is able to distinguish between precision recall pairs or points. These values are obtained using different thresholds on a probabilistic or other continuous-output classifier. AUCPR is an average of the precision-recall weighted by the probability of a given threshold. The main difference between AUC and AUCPR is that AUC calculates the area under the ROC curve and AUCPR calculates the area under the Precision Recall curve. The Precision Recall curve does not care about True Negatives. For imbalanced data, a large quantity of True Negatives usually overshadows the effects of changes in other metrics like False Positives. The AUCPR will be much more sensitive to True Positives, False Positives, and False Negatives than AUC. As such, AUCPR is recommended over AUC for highly imbalanced data.
+-   **Logloss** - The logarithmic loss metric can be used to evaluate the performance of a binomial or multinomial classifier. Unlike AUC which looks at how well a model can classify a binary target, logloss evaluates how close a model's predicted values (uncalibrated probability estimates) are to the actual target value. For example, does a model tend to assign a high predicted value like .80 for the positive class, or does it show a poor ability to recognize the positive class and assign a lower predicted value like .50? Logloss can be any value greater than or equal to 0, with 0 meaning that the model correctly assigns a probability of 0% or 100%.
+-   **Mean Per Class Error** - MCE is the average of the errors of each class. This metric speaks toward misclassification of the data across the classes. The lower this metric, the better. MSE is the Mean Square Error and is a model quality metric.

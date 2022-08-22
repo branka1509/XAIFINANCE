@@ -1,9 +1,3 @@
----
-output: 
-  html_document:
-    mathjax: "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
----
-
 ## Overview
 
 In this tab we provide in-depth explanation of the X-functions specifically tailored for financial time series that the research team developed. The methodology was first proposed in a paper by Wildi and Hadji Misheva (2022) which is made available at the following link: <https://www.explainableaiforfinance.com/repository-of-papers>

@@ -7,7 +7,11 @@ loanModelsUi <- function(id){
     fluidPage(
       fluidRow(
         box(width = 12,
-            h2("Models"))
+            h2("ML & DL Modelling"))
+      ),
+      fluidRow(
+        box(width = 12,
+            withMathJax(includeMarkdown("www/loan_models.Rmd")))
       ),
       fluidRow(
         column(6,
@@ -39,7 +43,7 @@ loanModelsUi <- function(id){
         column(6,
                box(
                  title = "Performance Table Interpretation",
-                 textOutput(ns("model_performance_int")),
+                 span(textOutput(ns("model_performance_int")),style="font-size:15px"),
                  width = 12)
         )
       ),
@@ -114,7 +118,7 @@ loanModelsServer <- function(id){
       output$model <- renderUI({
         selectInput(
           ns("model"), 
-          label = "Select the model",
+          label = "Select the class of model",
           choices = c(
                       "All" = "best",
                       "Stacked Ensemble" = "SE",
@@ -129,7 +133,7 @@ loanModelsServer <- function(id){
       output$score <- renderUI({
         selectInput(
           ns("score"), 
-          label = "Select your secondary variable",
+          label = "Select the evaluation criteria",
           choices = c("Area under curve" = "auc",
                       "Log-Loss" = "logloss",
                       "Area under Curve Precision Recall" = "aucpr",
@@ -170,7 +174,7 @@ loanModelsServer <- function(id){
         print(get(paste0("threshold_", input$model,"_",input$score)))
       })
       output$model_summary <- renderPrint({
-        get(paste0(input$model,"_",input$score))@model[["model_summary"]]
+        get(paste0(input$model,"_",input$score)) # @model[["model_summary"]]
       })
       output$model_performance <- renderText({
         paste0("AUC: ", best_auc@model[["cross_validation_metrics"]]@metrics[["pr_auc"]], "\n",
@@ -179,15 +183,14 @@ loanModelsServer <- function(id){
             "Mean error per class: ", get(paste0(input$model,"_",input$score))@model[["cross_validation_metrics"]]@metrics[["mean_per_class_error"]], "\n",
             "Gini: ", get(paste0(input$model,"_",input$score))@model[["cross_validation_metrics"]]@metrics[["Gini"]])
       })
-      output$model_performance_int <- renderText({
+      output$model_performance_int <- renderText(
         paste0("Looking at the AUC performance measures the model reports at AUC of ", get(paste0(input$model,"_",input$score))@model[["cross_validation_metrics"]]@metrics[["AUC"]],
             " which according to general rule of thumb, falls with the acceptable range of accuracy (AUC = 0 indicates a perfectly inaccurate test; AUC = 0.5 indicates no discrimination; AUC = 0.7-0.8 indicates an acceptable level of accuracy; AUC = 0.8-0.9 is considered excellent, and AUC > 0.9 is considered outstanding. The AUC value in this context is obtained through a 5-fold cross-validation on the training data and computed through combined holdout predictions. \n
 The AUC measure is classification-threshold-invariant, meaning it reflects the predictiveutility of the model regardless of the classification threshold chosen. This property may limit it usefulness  in certain cases in which there is a wide disparity between the cost of false negative (eg. the model ranks a bad performing loan as good) vs false positive (eg. the model ranks a good loan as bad performing). This is specifically relevant in a loan performance use case as one likely wants to prioritize minimizing the false negatives (i.e. the actual loss incurred) even if this results in an increase in the false positives. \n
 Precision-Recall is a useful measure of success of prediction when the classes are very imbalanced. In information retrieval, precision is a measure of result relevancy, while recall is a measure of how many truly relevant results are returned. Put differently, the precision-recall curve shows the trade-off between precision and recall for different threshold. A high area under the curve represents both high recall and high precision, where high precision relates to a low false positive rate, and high recall relates to a low false negative rate. High scores for both show that the classifier is returning accurate results (high precision), as well as returning a majority of all positive results (high recall). \n
 The area under the precision-recall curve is ", get(paste0(input$model,"_",input$score))@model[["cross_validation_metrics"]]@metrics[["pr_auc"]], " which is better that a random classifier but could be improved. What we can interpret from the plot is that the model has high precision (>.7) only for low levels of recall and vice versa. \n
 The log-loss indicators measure how close a predicted probability is to the corresponding true class. The larger this difference, the higher the log-loss value. The log-loss value for the model is ", best_auc@model[["cross_validation_metrics"]]@metrics[["logloss"]])
-
-      })
+      )
     }
   )
 }

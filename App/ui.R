@@ -7,7 +7,7 @@ sidebar <- dashboardSidebar(
     shinydashboard::menuSubItem("Data Exploration", tabName = "loan_data", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Single Data Exploration", tabName = "loan_data_single", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Multiple Data Exploration", tabName = "loan_data_multiple", icon = shiny::icon("wallet")),
-    shinydashboard::menuSubItem("Models", tabName = "loan_models", icon = shiny::icon("wallet")),
+    shinydashboard::menuSubItem("ML & DL Models", tabName = "loan_models", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Explainability", tabName = "loan_explainability", icon = shiny::icon("wallet")),
     shinydashboard::menuSubItem("Stability", tabName = "loan_stability", icon = shiny::icon("wallet"))),
     shinydashboard::menuItem("Time Series", tabName = "time_page", icon = shiny::icon("chart-line"),

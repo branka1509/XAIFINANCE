@@ -1,0 +1,28 @@
+## Overview
+
+This tab allows users to test the stability of the predictions obtained by the various ML & DL model. Specifically, users can select a numeric feature to which they can apply different levels of noise and observe the changes that this action causes to the best performing ML model. In terms of the level of noises, you can choose between one of the following options:
+
+- Sensitivity 1: a = z/50 
+- Sensitivity 2: a = 1.1 x z/50 
+- Sensitivity 3: a = 1.5 x z/50 
+- Sensitivity 4: a = 2.5 x z/50 
+- Sensitivity 5: a = 5 x z/50 
+- Sensitivity 6: d = smallest difference between adjacent unique x values, a = d/5 
+- Sensitivity 7: d = smallest difference between adjacent unique x values, a = 1.1*d/5 
+- Sensitivity 8: d = smallest difference between adjacent unique x values, a = 1.5*d/5 
+- Sensitivity 9: d = smallest difference between adjacent unique x values, a = 2.5*d/5 
+- Sensitivity 10: d = smallest difference between adjacent unique x values, a = 5*d/5
+
+**Note:** If the selected variable is X, and Z = max(x) -- min (x), the noise we apply is: X + runif(n, -a, +a)
+
+Once you select the level of noise, the app displays the changes in the performance of the ML model that was caused by adding small noise to the selected feature. Specifically, the table contains:
+
+-   the positive or negative change in the overall predictive utility of the model (AUC and AUCPR)
+-   the mean change in the selected variable
+-   the mean change in the predicted probability of default
+-   the -min change in the predicted probability of default
+-   the max change in the predicted probability of default
+-   the number of class changes that have happened due to the change in the variable
+-   the correlation coefficient between the change in the variable and the change in the predicted probability
+-   the regression coefficient from a fitted OLS (y = change in the prediction \~ x = change in the variable)
+-   the scatter plot with an added smooth (y = change in the prediction \~ x = change in the variable)

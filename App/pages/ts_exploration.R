@@ -9,6 +9,8 @@ tsExplorationUi <- function(id){
       fluidRow(
         box(width=12,h2("Time Series Data Explainability"))),
       fluidRow(
+        box(width=12,textOutput(ns("overview")))),
+      fluidRow(
         box(width=12,h3("Original data"))),
       fluidRow(
         column(width = 6,
@@ -81,6 +83,7 @@ tsExplorationServer <- function(id){
           datatable() %>%
           formatRound(columns=colnames(data_mat), digits=4)
       })
+      output$overview <- renderText("The data used in this use case contains daily Bitcoin returns covering the period15-04-2014 to 30-06-2021. This tab allows you to explore the original data as well as visualize the time series of the prices, the log prices, the log returns, and the log volume.")
     }
   )
 }
