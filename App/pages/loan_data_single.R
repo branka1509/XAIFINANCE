@@ -15,19 +15,24 @@ loanDataSingleUi <- function(id){
       fluidRow(
         column(6,
                box(
+                 title = "Variable",
                  uiOutput(ns("input_var")),
                  width = 12)
         ),
         column(6,
-               box(width = 12, textOutput(ns("description")))
+               box(width = 12, title = "Description", textOutput(ns("description")))
         )
       ),
         
       fluidRow(
-        column(12,
+        column(6,
                box(
                  dataTableOutput(ns("var_descr")),
                  width = 12)
+        ),
+        column(6,
+               box(width = 12, 
+                   plotOutput(ns("var_plot")))
         )
       ),
       fluidRow(
@@ -39,12 +44,6 @@ loanDataSingleUi <- function(id){
                  plotOutput(ns("dens_plot")),
                  width = 12)
         ),
-      ),
-      fluidRow(
-        column(12,
-               box(width = 12, 
-                   plotOutput(ns("var_plot")))
-        )
       ),
       fluidRow(
         column(6, align="center",
