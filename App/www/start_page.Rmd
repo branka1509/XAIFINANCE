@@ -18,7 +18,7 @@ Details concerning the overall objective of the project, the methodologies devel
 
 ## ![](images/overview.png)
 
-**APP STRUCTURE & PROPERTIES**
+##APP STRUCTURE & PROPERTIES
 
 ### Credit risk modelling
 
