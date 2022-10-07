@@ -23,7 +23,7 @@ In this context the repository contains all the scripts used for:
 * data: raw (source data), beta_data (after inital feature selection step), alpha_data (after secondary (boruta) feature selection), final dataset (used for the analysis conducted)
 * models: contains all the developed models
 * notebooks: All RMarkdown notebooks created in the project
-* functions
+* functions developed
 
 
 ## Finacial Time Series Forecasting 
