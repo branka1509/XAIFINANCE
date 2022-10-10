@@ -20,8 +20,8 @@ Once you select the level of noise, the app displays the changes in the performa
 -   the positive or negative change in the overall predictive utility of the model (AUC and AUCPR)
 -   the mean change in the selected variable
 -   the mean change in the predicted probability of default
--   the -min change in the predicted probability of default
--   the max change in the predicted probability of default
+-   the minimum change in the predicted probability of default
+-   the maximum change in the predicted probability of default
 -   the number of class changes that have happened due to the change in the variable
 -   the correlation coefficient between the change in the variable and the change in the predicted probability
 -   the regression coefficient from a fitted OLS (y = change in the prediction \~ x = change in the variable)

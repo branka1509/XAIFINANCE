@@ -4,7 +4,7 @@
 
 ## OVERVIEW
 
-This VA tool is produced as part of the work done under the Innosuisse Project 41084.1 IP-SBM: Towards Explainable Artificial Intelligence and Machine Learning in Credit Risk Management. Under this project, we build a VA tool which will enable users to get insights into the innerworkings of ML models as applied to financial problem sets.
+This VA tool is produced as part of the work done under the Innosuisse Project 41084.1 IP-SBM: Towards Explainable Artificial Intelligence and Machine Learning in Credit Risk Management. Under this project, we build a VA tool which enables users to get insights into the innerworkings of ML models as applied to financial problem sets.
 
 Specifically, we consider two different use cases:
 
@@ -14,7 +14,7 @@ Specifically, we consider two different use cases:
 
 ## WHERE TO FIND MORE?
 
-Details concerning the overall objective of the project, the methodologies developed, published papers & more are available on the project's website: <https://www.explainableaiforfinance.com/>
+Details concerning the overall objective of the project, the methodologies and code developed, published papers, presentations & more are available on the project's official website: <https://www.explainableaiforfinance.com/>
 
 ## ![](images/overview.png)
 
@@ -26,13 +26,13 @@ Details concerning the overall objective of the project, the methodologies devel
 
 The first use case allows users to obtain insights into building and evaluating ML-based models for credit risk management i.e. models that are trained to discriminate between loan contracts that default vs those that do not default. Specifically, the app allows users to understand the end-to-end process of building ML models for such a use case and obtain detailed explanation & interpretations of the results though a 'financial analysts' lenses. As such, the tool is useful both a technical and non-technical audience.
 
-*Properties*
+#### Properties
 
-**Data exploration --** The modelling is done using real loan performance data sourced from a P2P lending platform that operated on the U.S. lending market. Details on the source data can be obtained at the following link: ..... The app allows users to explore the dataset used in this use case though various summary statistics and univariate & multivariate visualization plots.
+**Data exploration --** The modelling is done using real loan performance data sourced from a P2P lending platform that operated on the U.S. lending market. Details on the source data can be obtained at the following link: <https://www.kaggle.com/datasets/wordsforthewise/lending-club>. The app allows users to explore the dataset used in this use case though various summary statistics and univariate & multivariate visualization plots.
 
 **Data pre-processing --** The app allows users to work with a fully processed dataset. In supervised predictive modelling, algorithms learn by mapping input factors to a target variable. We cannot fit and evaluate machine learning models on raw data but rather datasets have to be processed and transformed so to fit the requirements of individual machine learning models. Even more importantly, we need to identify a representation of the data that best exposes the underlining patters between the input and output features, given a specific machine learning model. As a result, one of the main and most challenging tasks of any machine learning project is the data pre-processing step.
 
-The app allows users to understand the full process of data pre-processing necessary for a task like credit risk evaluation.
+The app allows users to understand the full process of data pre-processing necessary for a task like credit risk evaluation. Furthermore, more technical users can access the implementation scripts of this step and utilize the material developed in separate use cases. 
 
 **Machine learning (ML) & Deep learning (DL) models --** The app allows users to explore the results from trained ML & DL models applied to the problem of credit risk. Specifically, users can select the type of model they would like to evaluate and obtain the results concerning that model from a great variety of evaluation metrices. Considering that the app is also intended to help a non-technical audience as well, each evaluation criteria is explained and the results are interpreted.
 
