@@ -57,3 +57,7 @@ The second use case allows users to obtain insights into running explanability t
 **X-functions --** The app guides users though the developed X-functions that are specifically suited for explaining models applied to financial time series.
 
 **Applications --** The app allows users insights into the risk management applications that the developed x-functions can have.
+
+## NOTE
+
+Concerning the credit risk use case, the overall environment for this project is quite large hence executing certain choices might take up to a minute. We aim to make the process faster and more efficient in the future. 
