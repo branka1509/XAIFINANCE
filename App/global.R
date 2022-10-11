@@ -56,8 +56,8 @@ library("fastshap")
 library("ggcorrplot")
 library("vtable")
 library("PerformanceAnalytics")
-library("sjPlot")
-library("jtools")
+# library("sjPlot")
+# library("jtools")
 library("ggridges")
 # library("huxtable")
 # library("treemapify")
@@ -87,9 +87,9 @@ source("pages/ts_exploration.R")
 source("pages/ts_classic.R")
 
 # load data
-load("~/GitHub/XAIFINANCE/app/data/clean/bitcoin.Rdata")
+load("/srv/shiny-server/app/data/clean/bitcoin.Rdata")
 # load data from environment
-env_files <- list.files("~/GitHub/XAIFINANCE/app/data/environment", pattern="*.RData", full.names=FALSE)
+env_files <- list.files("/srv/shiny-server/app/data/environment", pattern="*.RData", full.names=FALSE)
 existing_files <- objects()
 
 for (file in env_files){
@@ -98,7 +98,7 @@ for (file in env_files){
     print(paste0("File already exists: ", file_name))
   } else{
     print(paste0("Loading file: ", file_name))
-    load(paste0("~/GitHub/XAIFINANCE/app/data/environment/",file))
+    load(paste0("/srv/shiny-server/app/data/environment",file))
   }
 }
 
